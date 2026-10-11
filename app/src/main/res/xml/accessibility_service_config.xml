@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Back, Home and Recent apps only. canRetrieveWindowContent=false: the service never reads screen content. -->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:canRetrieveWindowContent="false"
+    android:description="@string/nav_service_description"
+    android:settingsActivity="com.xmiqarri.cardisplayz.MainActivity" />

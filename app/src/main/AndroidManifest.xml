@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Lets the memory cleanup stop background processes of other apps (normal permission, no prompt). -->
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
 
     <!-- Lets the app list installed launchers on Android 11+ without QUERY_ALL_PACKAGES. -->
     <queries>
@@ -46,6 +48,20 @@
         <service
             android:name=".overlay.OverlayService"
             android:exported="false" />
+
+        <!-- Bottom bar: Back, Home, Recents, memory cleanup. Enabled by the user in Accessibility settings. -->
+        <service
+            android:name=".nav.NavBarService"
+            android:exported="true"
+            android:label="@string/nav_service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
 
         <receiver
             android:name=".overlay.BootReceiver"

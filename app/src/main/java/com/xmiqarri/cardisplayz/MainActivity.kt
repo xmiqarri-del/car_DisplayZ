@@ -19,6 +19,8 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import com.xmiqarri.cardisplayz.apps.AppGridActivity
+import com.xmiqarri.cardisplayz.apps.MemoryCleaner
+import com.xmiqarri.cardisplayz.nav.NavBarService
 import com.xmiqarri.cardisplayz.overlay.OverlayService
 import com.xmiqarri.cardisplayz.update.ApkDownloader
 import com.xmiqarri.cardisplayz.update.ApkInstaller
@@ -101,12 +103,35 @@ class MainActivity : ComponentActivity() {
             onClick = null,
         )
 
+        section(getString(R.string.section_navigation))
+        addRow(
+            title = getString(R.string.row_navbar),
+            subtitle = getString(R.string.row_navbar_sub),
+            trailing = toggle(AppSettings.navBarEnabled(this)) { on -> onNavBarToggled(on) },
+            onClick = null,
+        )
+        addRow(
+            title = getString(R.string.row_nav_service),
+            subtitle = getString(if (NavBarService.instance != null) R.string.nav_on else R.string.nav_off),
+            trailing = null,
+            onClick = { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) },
+        )
+
         section(getString(R.string.section_apps))
         addRow(
             title = getString(R.string.row_open_apps),
             subtitle = getString(R.string.row_open_apps_sub),
             trailing = null,
             onClick = { startActivity(Intent(this, AppGridActivity::class.java)) },
+        )
+        addRow(
+            title = getString(R.string.row_clean),
+            subtitle = getString(R.string.row_clean_sub),
+            trailing = null,
+            onClick = {
+                val stopped = MemoryCleaner.clean(this)
+                Toast.makeText(this, getString(R.string.clean_done, stopped), Toast.LENGTH_SHORT).show()
+            },
         )
 
         section(getString(R.string.section_updates))
@@ -225,6 +250,16 @@ class MainActivity : ComponentActivity() {
             if (Settings.canDrawOverlays(this)) OverlayService.start(this) else openOverlayPermission()
         } else {
             OverlayService.stop(this)
+        }
+        render()
+    }
+
+    private fun onNavBarToggled(on: Boolean) {
+        AppSettings.setNavBarEnabled(this, on)
+        NavBarService.instance?.refreshBar()
+        if (on && NavBarService.instance == null) {
+            // The bar needs the accessibility service, which only the user can turn on.
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
         render()
     }

@@ -62,4 +62,20 @@
     <string name="section_about">حول التطبيق</string>
     <string name="row_version">الإصدار</string>
     <string name="row_package">المعرّف</string>
+
+    <string name="section_navigation">التنقل</string>
+    <string name="row_navbar">الأزرار السفلية (رجوع، رئيسية، تطبيقات)</string>
+    <string name="row_navbar_sub">تظهر عند تفعيل خدمة إمكانية الوصول بالأسفل</string>
+    <string name="row_nav_service">خدمة إمكانية الوصول</string>
+    <string name="nav_on">مفعّلة</string>
+    <string name="nav_off">غير مفعّلة: اضغط للتفعيل من إعدادات إمكانية الوصول</string>
+    <string name="row_clean">تنظيف الذاكرة</string>
+    <string name="row_clean_sub">يوقف التطبيقات التي تعمل في الخلفية</string>
+    <string name="clean_done">تم إيقاف %1$d تطبيقات في الخلفية</string>
+    <string name="nav_back">رجوع</string>
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_recents">التطبيقات الأخيرة</string>
+    <string name="nav_clean">تنظيف الذاكرة</string>
+    <string name="nav_service_label">التنقل في Car_DisplayZ</string>
+    <string name="nav_service_description">يعرض أزرار الرجوع والرئيسية والتطبيقات الأخيرة وتنظيف الذاكرة أسفل الشاشة. لا يقرأ محتوى الشاشة.</string>
 </resources>

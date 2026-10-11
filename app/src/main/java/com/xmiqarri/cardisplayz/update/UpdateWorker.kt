@@ -56,7 +56,7 @@ class UpdateWorker(context: Context, params: WorkerParameters) : CoroutineWorker
     }
 
     /** Downloads (or reuses) the verified APK and posts the "ready" notification. */
-    private fun prepareUpdate(app: Context, info: UpdateInfo) {
+    private suspend fun prepareUpdate(app: Context, info: UpdateInfo) {
         val cached = ApkDownloader.cachedApk(app.cacheDir)
         val apk = if (cached.exists() && ApkInstaller.verifyPackage(app, cached, info.versionCode)) {
             cached

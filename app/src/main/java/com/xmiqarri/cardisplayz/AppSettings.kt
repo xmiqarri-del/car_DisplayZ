@@ -20,6 +20,13 @@ object AppSettings {
         prefs(context).edit().putBoolean("start_on_boot", enabled).apply()
     }
 
+    /** Bottom bar with Back, Home, Recents and memory cleanup. Shows only when the accessibility service is on. */
+    fun navBarEnabled(context: Context): Boolean = prefs(context).getBoolean("navbar_enabled", true)
+
+    fun setNavBarEnabled(context: Context, enabled: Boolean) {
+        prefs(context).edit().putBoolean("navbar_enabled", enabled).apply()
+    }
+
     fun autoUpdate(context: Context): Boolean = prefs(context).getBoolean("auto_update", true)
 
     fun setAutoUpdate(context: Context, enabled: Boolean) {

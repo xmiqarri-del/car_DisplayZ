@@ -62,4 +62,20 @@
     <string name="section_about">About</string>
     <string name="row_version">Version</string>
     <string name="row_package">Package</string>
+
+    <string name="section_navigation">Navigation</string>
+    <string name="row_navbar">Bottom buttons (Back, Home, Recents)</string>
+    <string name="row_navbar_sub">Shown when the accessibility service below is on</string>
+    <string name="row_nav_service">Accessibility service</string>
+    <string name="nav_on">On</string>
+    <string name="nav_off">Off: tap to turn it on in Accessibility settings</string>
+    <string name="row_clean">Clean memory</string>
+    <string name="row_clean_sub">Stops apps running in the background</string>
+    <string name="clean_done">Background apps stopped: %1$d</string>
+    <string name="nav_back">Back</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_recents">Recent apps</string>
+    <string name="nav_clean">Clean memory</string>
+    <string name="nav_service_label">Car_DisplayZ navigation</string>
+    <string name="nav_service_description">Shows Back, Home, Recent apps and memory cleanup buttons at the bottom of the screen. It does not read screen content.</string>
 </resources>
