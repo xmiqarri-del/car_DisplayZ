@@ -1,4 +1,4 @@
-package com.baghdady.cardisplayz.apps
+package com.xmiqarri.cardisplayz.apps
 
 import android.content.ActivityNotFoundException
 import android.content.Context

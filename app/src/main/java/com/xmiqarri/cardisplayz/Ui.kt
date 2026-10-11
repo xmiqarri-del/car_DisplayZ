@@ -1,4 +1,4 @@
-package com.baghdady.cardisplayz
+package com.xmiqarri.cardisplayz
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable

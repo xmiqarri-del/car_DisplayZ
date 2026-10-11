@@ -1,4 +1,4 @@
-package com.baghdady.cardisplayz
+package com.xmiqarri.cardisplayz
 
 import android.Manifest
 import android.content.Intent
@@ -14,11 +14,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
-import com.baghdady.cardisplayz.apps.AppGridActivity
-import com.baghdady.cardisplayz.overlay.OverlayService
-import com.baghdady.cardisplayz.update.ApkDownloader
-import com.baghdady.cardisplayz.update.ApkInstaller
-import com.baghdady.cardisplayz.update.UpdateWorker
+import com.xmiqarri.cardisplayz.apps.AppGridActivity
+import com.xmiqarri.cardisplayz.overlay.OverlayService
+import com.xmiqarri.cardisplayz.update.ApkDownloader
+import com.xmiqarri.cardisplayz.update.ApkInstaller
+import com.xmiqarri.cardisplayz.update.UpdateWorker
 import java.io.File
 
 /**

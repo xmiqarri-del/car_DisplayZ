@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "com.baghdady.cardisplayz"
+    namespace = "com.xmiqarri.cardisplayz"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.baghdady.cardisplayz"
+        applicationId = "com.xmiqarri.cardisplayz"
         minSdk = 30            // Android 11+
         targetSdk = 33
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 3
+        versionName = "1.1.1"
 
         // The update manifest is a JSON file uploaded to the latest GitHub release of this repo.
         buildConfigField(

@@ -1,4 +1,4 @@
-package com.baghdady.cardisplayz.update
+package com.xmiqarri.cardisplayz.update
 
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient

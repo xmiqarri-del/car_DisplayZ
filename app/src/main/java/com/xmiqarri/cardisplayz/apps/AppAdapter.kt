@@ -1,4 +1,4 @@
-package com.baghdady.cardisplayz.apps
+package com.xmiqarri.cardisplayz.apps
 
 import android.content.res.ColorStateList
 import android.graphics.drawable.RippleDrawable
@@ -9,10 +9,10 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.baghdady.cardisplayz.MATCH
-import com.baghdady.cardisplayz.WRAP
-import com.baghdady.cardisplayz.dp
-import com.baghdady.cardisplayz.roundedBackground
+import com.xmiqarri.cardisplayz.MATCH
+import com.xmiqarri.cardisplayz.WRAP
+import com.xmiqarri.cardisplayz.dp
+import com.xmiqarri.cardisplayz.roundedBackground
 
 /** Grid tiles for the app list. [compact] tiles have a fixed width for the horizontal "most used" row. */
 class AppAdapter(

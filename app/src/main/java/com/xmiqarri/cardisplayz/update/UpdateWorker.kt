@@ -1,4 +1,4 @@
-package com.baghdady.cardisplayz.update
+package com.xmiqarri.cardisplayz.update
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -14,9 +14,9 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.baghdady.cardisplayz.BuildConfig
-import com.baghdady.cardisplayz.MainActivity
-import com.baghdady.cardisplayz.R
+import com.xmiqarri.cardisplayz.BuildConfig
+import com.xmiqarri.cardisplayz.MainActivity
+import com.xmiqarri.cardisplayz.R
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 

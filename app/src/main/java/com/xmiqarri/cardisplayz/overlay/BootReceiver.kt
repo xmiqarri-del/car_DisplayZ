@@ -1,9 +1,9 @@
-package com.baghdady.cardisplayz.overlay
+package com.xmiqarri.cardisplayz.overlay
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.baghdady.cardisplayz.update.UpdateWorker
+import com.xmiqarri.cardisplayz.update.UpdateWorker
 
 /** Brings the floating button back after the car system starts. */
 class BootReceiver : BroadcastReceiver() {

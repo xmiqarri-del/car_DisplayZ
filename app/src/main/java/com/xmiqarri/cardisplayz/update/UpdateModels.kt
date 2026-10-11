@@ -1,4 +1,4 @@
-package com.baghdady.cardisplayz.update
+package com.xmiqarri.cardisplayz.update
 
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull

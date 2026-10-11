@@ -1,4 +1,4 @@
-package com.baghdady.cardisplayz.overlay
+package com.xmiqarri.cardisplayz.overlay
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -17,10 +17,10 @@ import android.view.WindowManager
 import android.widget.ImageView
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.baghdady.cardisplayz.R
-import com.baghdady.cardisplayz.apps.AppGridActivity
-import com.baghdady.cardisplayz.dp
-import com.baghdady.cardisplayz.update.UpdateWorker
+import com.xmiqarri.cardisplayz.R
+import com.xmiqarri.cardisplayz.apps.AppGridActivity
+import com.xmiqarri.cardisplayz.dp
+import com.xmiqarri.cardisplayz.update.UpdateWorker
 import kotlin.math.abs
 
 /**

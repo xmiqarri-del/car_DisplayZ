@@ -1,4 +1,4 @@
-package com.baghdady.cardisplayz.update
+package com.xmiqarri.cardisplayz.update
 
 import java.io.File
 import java.io.FileInputStream

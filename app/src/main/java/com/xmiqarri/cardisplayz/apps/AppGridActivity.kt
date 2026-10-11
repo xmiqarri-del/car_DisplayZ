@@ -1,4 +1,4 @@
-package com.baghdady.cardisplayz.apps
+package com.xmiqarri.cardisplayz.apps
 
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.GradientDrawable
@@ -14,11 +14,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.baghdady.cardisplayz.MATCH
-import com.baghdady.cardisplayz.R
-import com.baghdady.cardisplayz.WRAP
-import com.baghdady.cardisplayz.dp
-import com.baghdady.cardisplayz.roundedBackground
+import com.xmiqarri.cardisplayz.MATCH
+import com.xmiqarri.cardisplayz.R
+import com.xmiqarri.cardisplayz.WRAP
+import com.xmiqarri.cardisplayz.dp
+import com.xmiqarri.cardisplayz.roundedBackground
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
