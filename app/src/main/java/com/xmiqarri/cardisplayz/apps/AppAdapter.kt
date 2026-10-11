@@ -14,10 +14,14 @@ import com.xmiqarri.cardisplayz.WRAP
 import com.xmiqarri.cardisplayz.dp
 import com.xmiqarri.cardisplayz.roundedBackground
 
-/** Grid tiles for the app list. [compact] tiles have a fixed width for the horizontal "most used" row. */
+/**
+ * Grid tiles for the app list. [compact] tiles have a fixed width for the horizontal "most used" row.
+ * A tap calls [onClick]; a long press calls [onLongClick] (used to delete an app).
+ */
 class AppAdapter(
     private val compact: Boolean,
     private val onClick: (AppItem) -> Unit,
+    private val onLongClick: (AppItem) -> Unit,
 ) : RecyclerView.Adapter<AppAdapter.Holder>() {
 
     private var items: List<AppItem> = emptyList()
@@ -70,6 +74,10 @@ class AppAdapter(
         holder.icon.setImageDrawable(item.icon)
         holder.label.text = item.label
         holder.root.setOnClickListener { onClick(item) }
+        holder.root.setOnLongClickListener {
+            onLongClick(item)
+            true
+        }
     }
 
     override fun getItemCount(): Int = items.size

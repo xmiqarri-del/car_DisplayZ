@@ -102,6 +102,11 @@ class MainActivity : ComponentActivity() {
             startActivity(Intent(this, AppGridActivity::class.java))
         })
 
+        root.addView(styledButton(getString(R.string.main_check_updates)) {
+            // Runs in the background; the install button appears here when the download is ready.
+            UpdateWorker.checkNow(this)
+        })
+
         installButton = styledButton(getString(R.string.main_install_update)) {
             installDownloadedUpdate(expectedVersionCode = -1)
         }

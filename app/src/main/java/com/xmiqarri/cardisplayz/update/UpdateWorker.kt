@@ -10,7 +10,9 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
@@ -96,8 +98,18 @@ class UpdateWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         const val EXTRA_VERSION_CODE = "version_code"
 
         private const val WORK_NAME = "car_displayz_update_check"
+        private const val WORK_NAME_NOW = "car_displayz_update_check_now"
         private const val CHANNEL_ID = "updates"
         private const val NOTIFICATION_ID = 2001
+
+        /** Runs one background check now (the button in the app). Downloads and notifies like the scheduled one. */
+        fun checkNow(context: Context) {
+            val request = OneTimeWorkRequestBuilder<UpdateWorker>()
+                .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+                .build()
+            WorkManager.getInstance(context)
+                .enqueueUniqueWork(WORK_NAME_NOW, ExistingWorkPolicy.REPLACE, request)
+        }
 
         /** Schedules the periodic background check. Calling it again keeps the existing schedule. */
         fun schedule(context: Context) {

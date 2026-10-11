@@ -13,11 +13,13 @@
     <string name="main_status_off">الزر العائم: يحتاج إلى صلاحية</string>
     <string name="main_grant">السماح بالعرض فوق التطبيقات الأخرى</string>
     <string name="main_open_apps">فتح التطبيقات</string>
+    <string name="main_check_updates">فحص التحديثات</string>
     <string name="main_install_update">تثبيت التحديث المحمّل</string>
     <string name="install_missing">لا يوجد تحديث موثّق جاهز.</string>
     <string name="install_failed">لم يتم العثور على مثبّت التطبيقات في هذا الجهاز.</string>
 
     <string name="apps_title">التطبيقات</string>
+    <string name="hint_long_press">اضغط مطولاً على أي تطبيق لحذفه</string>
     <string name="search_hint">ابحث عن تطبيق</string>
     <string name="section_recent">الأكثر استخداماً</string>
     <string name="filter_all">الكل</string>
@@ -26,4 +28,10 @@
     <string name="filter_maps">ملاحة</string>
     <string name="filter_comm">تواصل</string>
     <string name="filter_other">أخرى</string>
+
+    <string name="uninstall_title">حذف %1$s؟</string>
+    <string name="uninstall_confirm">حذف</string>
+    <string name="cancel">إلغاء</string>
+    <string name="system_app_locked">لا يمكن حذف تطبيقات النظام</string>
+    <string name="uninstall_failed">تعذّر فتح نافذة الحذف</string>
 </resources>

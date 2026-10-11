@@ -3,10 +3,11 @@ package com.xmiqarri.cardisplayz.apps
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
 import org.json.JSONObject
 
-/** One launchable app, with its usage statistics. */
+/** One launchable app, with its usage statistics. [isSystem] apps come with the car and cannot be deleted. */
 data class AppItem(
     val label: String,
     val packageName: String,
@@ -14,6 +15,7 @@ data class AppItem(
     val launches: Int,
     val lastUsed: Long,
     val icon: Drawable?,
+    val isSystem: Boolean,
 )
 
 data class Usage(val count: Int, val time: Long)
@@ -66,14 +68,16 @@ object AppRepository {
             .filter { it.activityInfo.packageName != context.packageName }
             .map { info ->
                 val pkg = info.activityInfo.packageName
+                val appInfo = info.activityInfo.applicationInfo
                 val stat = usage[pkg]
                 AppItem(
                     label = info.loadLabel(pm).toString(),
                     packageName = pkg,
-                    category = info.activityInfo.applicationInfo.category,
+                    category = appInfo.category,
                     launches = stat?.count ?: 0,
                     lastUsed = stat?.time ?: 0L,
                     icon = info.loadIcon(pm),
+                    isSystem = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
                 )
             }
             .distinctBy { it.packageName }

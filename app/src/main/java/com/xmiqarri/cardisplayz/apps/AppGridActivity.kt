@@ -1,13 +1,18 @@
 package com.xmiqarri.cardisplayz.apps
 
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
@@ -25,7 +30,8 @@ import kotlinx.coroutines.withContext
 
 /**
  * Opened from the floating button. Shows the apps the driver uses most at the top, a search box,
- * and category chips. Tapping an app launches it and closes this screen.
+ * and category chips. Tapping an app launches it and closes this screen. Long-pressing an app
+ * the user installed offers to delete it (Android shows its own confirmation).
  */
 class AppGridActivity : ComponentActivity() {
 
@@ -33,8 +39,16 @@ class AppGridActivity : ComponentActivity() {
     private var currentFilter = AppFilter.ALL
     private val chipViews = mutableMapOf<AppFilter, TextView>()
 
-    private val gridAdapter = AppAdapter(compact = false) { launchApp(it) }
-    private val recentAdapter = AppAdapter(compact = true) { launchApp(it) }
+    private val gridAdapter = AppAdapter(
+        compact = false,
+        onClick = { launchApp(it) },
+        onLongClick = { confirmUninstall(it) },
+    )
+    private val recentAdapter = AppAdapter(
+        compact = true,
+        onClick = { launchApp(it) },
+        onLongClick = { confirmUninstall(it) },
+    )
 
     private lateinit var search: EditText
     private lateinit var recentLabel: TextView
@@ -80,6 +94,26 @@ class AppGridActivity : ComponentActivity() {
         if (AppRepository.launch(this, app.packageName)) finish()
     }
 
+    /** Asks before deleting. Only apps the user installed can be deleted. */
+    private fun confirmUninstall(app: AppItem) {
+        if (app.isSystem) {
+            Toast.makeText(this, R.string.system_app_locked, Toast.LENGTH_SHORT).show()
+            return
+        }
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.uninstall_title, app.label))
+            .setPositiveButton(R.string.uninstall_confirm) { _, _ ->
+                val intent = Intent(Intent.ACTION_DELETE, Uri.parse("package:${app.packageName}"))
+                try {
+                    startActivity(intent)
+                } catch (e: ActivityNotFoundException) {
+                    Toast.makeText(this, R.string.uninstall_failed, Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
     private fun styleChip(chip: TextView, selected: Boolean) {
         chip.background = roundedBackground(
             if (selected) 0xFF2BB3C0.toInt() else 0xFF152238.toInt(),
@@ -103,6 +137,12 @@ class AppGridActivity : ComponentActivity() {
             textSize = 24f
             setTextColor(0xFFFFFFFF.toInt())
             setTypeface(typeface, android.graphics.Typeface.BOLD)
+        })
+        root.addView(TextView(this).apply {
+            text = getString(R.string.hint_long_press)
+            textSize = 13f
+            setTextColor(0xFF8FA6C2.toInt())
+            layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(2) }
         })
 
         search = EditText(this).apply {

@@ -13,11 +13,13 @@
     <string name="main_status_off">Floating button: needs permission</string>
     <string name="main_grant">Allow display over other apps</string>
     <string name="main_open_apps">Open apps</string>
+    <string name="main_check_updates">Check for updates</string>
     <string name="main_install_update">Install downloaded update</string>
     <string name="install_missing">No verified update is ready.</string>
     <string name="install_failed">No package installer was found on this device.</string>
 
     <string name="apps_title">Apps</string>
+    <string name="hint_long_press">Press and hold an app to delete it</string>
     <string name="search_hint">Search apps</string>
     <string name="section_recent">Most used</string>
     <string name="filter_all">All</string>
@@ -26,4 +28,10 @@
     <string name="filter_maps">Navigation</string>
     <string name="filter_comm">Communication</string>
     <string name="filter_other">Other</string>
+
+    <string name="uninstall_title">Delete %1$s?</string>
+    <string name="uninstall_confirm">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="system_app_locked">System apps cannot be deleted</string>
+    <string name="uninstall_failed">Could not open the uninstaller</string>
 </resources>
