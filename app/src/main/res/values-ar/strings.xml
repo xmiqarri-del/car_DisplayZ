@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Car_DisplayZ</string>
+    <string name="channel_overlay">الزر العائم</string>
+    <string name="channel_updates">التحديثات</string>
+    <string name="overlay_notification_title">Car_DisplayZ</string>
+    <string name="overlay_notification_text">الزر العائم يعمل</string>
+    <string name="overlay_button_desc">فتح التطبيقات</string>
+    <string name="update_ready_title">التحديث جاهز</string>
+    <string name="update_ready_text">Car_DisplayZ %1$s جاهز للتثبيت. اضغط للتثبيت.</string>
+
+    <string name="main_status_on">الزر العائم: يعمل</string>
+    <string name="main_status_off">الزر العائم: يحتاج إلى صلاحية</string>
+    <string name="main_grant">السماح بالعرض فوق التطبيقات الأخرى</string>
+    <string name="main_open_apps">فتح التطبيقات</string>
+    <string name="main_install_update">تثبيت التحديث المحمّل</string>
+    <string name="install_missing">لا يوجد تحديث موثّق جاهز.</string>
+    <string name="install_failed">لم يتم العثور على مثبّت التطبيقات في هذا الجهاز.</string>
+
+    <string name="apps_title">التطبيقات</string>
+    <string name="search_hint">ابحث عن تطبيق</string>
+    <string name="section_recent">الأكثر استخداماً</string>
+    <string name="filter_all">الكل</string>
+    <string name="filter_frequent">المفضلة</string>
+    <string name="filter_media">وسائط</string>
+    <string name="filter_maps">ملاحة</string>
+    <string name="filter_comm">تواصل</string>
+    <string name="filter_other">أخرى</string>
+</resources>

@@ -1,0 +1,122 @@
+name: Release APK
+
+# On push to main: if no release v<versionName> exists, build a SIGNED release APK, compute its
+# SHA-256, and publish the APK plus update.json (the manifest the in-app updater reads).
+# To publish: bump versionName and versionCode in app/build.gradle.kts, then push to main.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   KEYSTORE_B64      base64 of the release .jks file
+#   KEYSTORE_PASSWORD store password
+#   KEY_ALIAS         key alias inside the keystore
+#   KEY_PASSWORD      key password
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        run: |
+          VN=$(grep -E 'versionName\s*=' app/build.gradle.kts | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
+          VC=$(grep -E 'versionCode\s*=' app/build.gradle.kts | head -1 | grep -oE '[0-9]+' | head -1)
+          echo "version_name=$VN" >> "$GITHUB_OUTPUT"
+          echo "version_code=$VC" >> "$GITHUB_OUTPUT"
+          echo "Version $VN (code $VC)"
+
+      - name: Skip if release already exists
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ steps.version.outputs.version_name }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Release $TAG already exists; nothing to do."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check signing secrets
+        if: steps.check.outputs.exists == 'false'
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          # A build signed with a different key cannot update the installed app, so never
+          # fall back to the debug key here.
+          if [ -z "$KEYSTORE_B64" ] || [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
+            echo "::error::Signing secrets are missing. Add KEYSTORE_B64, KEYSTORE_PASSWORD, KEY_ALIAS and KEY_PASSWORD."
+            exit 1
+          fi
+
+      - name: Decode release keystore
+        if: steps.check.outputs.exists == 'false'
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        run: |
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+
+      - name: Set up JDK 17
+        if: steps.check.outputs.exists == 'false'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK components
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null
+          "$SDKMANAGER" "platforms;android-34" "build-tools;34.0.0" "platform-tools"
+
+      - name: Build signed APK
+        if: steps.check.outputs.exists == 'false'
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Create update.json with SHA-256
+        if: steps.check.outputs.exists == 'false'
+        env:
+          TAG: v${{ steps.version.outputs.version_name }}
+          VN: ${{ steps.version.outputs.version_name }}
+          VC: ${{ steps.version.outputs.version_code }}
+        run: |
+          APK="Car_DisplayZ-${TAG}.apk"
+          cp app/build/outputs/apk/release/app-release.apk "$APK"
+          SHA=$(sha256sum "$APK" | cut -d' ' -f1)
+          SIZE=$(stat -c %s "$APK")
+          URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/${APK}"
+          printf '{"version_name":"%s","version_code":%s,"apk_url":"%s","sha256":"%s","size_bytes":%s}\n' \
+            "$VN" "$VC" "$URL" "$SHA" "$SIZE" > update.json
+          cat update.json
+
+      - name: Publish GitHub release
+        if: steps.check.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ steps.version.outputs.version_name }}
+        run: |
+          gh release create "$TAG" "Car_DisplayZ-${TAG}.apk" update.json \
+            --target "$GITHUB_SHA" \
+            --title "Car_DisplayZ ${TAG}" \
+            --generate-notes

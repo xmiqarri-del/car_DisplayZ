@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Car_DisplayZ</string>
+    <string name="channel_overlay">Floating button</string>
+    <string name="channel_updates">Updates</string>
+    <string name="overlay_notification_title">Car_DisplayZ</string>
+    <string name="overlay_notification_text">Floating button is active</string>
+    <string name="overlay_button_desc">Open apps</string>
+    <string name="update_ready_title">Update ready</string>
+    <string name="update_ready_text">Car_DisplayZ %1$s is ready to install. Tap to install.</string>
+
+    <string name="main_status_on">Floating button: on</string>
+    <string name="main_status_off">Floating button: needs permission</string>
+    <string name="main_grant">Allow display over other apps</string>
+    <string name="main_open_apps">Open apps</string>
+    <string name="main_install_update">Install downloaded update</string>
+    <string name="install_missing">No verified update is ready.</string>
+    <string name="install_failed">No package installer was found on this device.</string>
+
+    <string name="apps_title">Apps</string>
+    <string name="search_hint">Search apps</string>
+    <string name="section_recent">Most used</string>
+    <string name="filter_all">All</string>
+    <string name="filter_frequent">Frequent</string>
+    <string name="filter_media">Media</string>
+    <string name="filter_maps">Navigation</string>
+    <string name="filter_comm">Communication</string>
+    <string name="filter_other">Other</string>
+</resources>
