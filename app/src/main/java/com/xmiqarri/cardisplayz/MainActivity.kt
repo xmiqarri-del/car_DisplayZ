@@ -147,7 +147,7 @@ class MainActivity : ComponentActivity() {
             trailing = null,
             onClick = { UpdateWorker.checkNow(this) },
         )
-        if (ApkDownloader.cachedApk(cacheDir).exists()) {
+        if (isNewerBuild(ApkDownloader.cachedApk(cacheDir))) {
             addRow(
                 title = getString(R.string.row_install),
                 subtitle = getString(R.string.row_install_sub),
@@ -302,6 +302,12 @@ class MainActivity : ComponentActivity() {
             return ApkInstaller.verifyPackage(this, apk, expectedVersionCode)
         }
         // Button press without a notification: accept any newer build of this app.
+        return isNewerBuild(apk)
+    }
+
+    /** True when [apk] exists and is a build of this app that is newer than the one installed now. */
+    private fun isNewerBuild(apk: File): Boolean {
+        if (!apk.exists()) return false
         val info = packageManager.getPackageArchiveInfo(apk.absolutePath, 0) ?: return false
         return info.packageName == packageName && info.longVersionCode > BuildConfig.VERSION_CODE
     }

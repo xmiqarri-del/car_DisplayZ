@@ -9,12 +9,6 @@
     <string name="update_ready_title">Update ready</string>
     <string name="update_ready_text">Car_DisplayZ %1$s is ready to install. Tap to install.</string>
 
-    <string name="main_status_on">Floating button: on</string>
-    <string name="main_status_off">Floating button: needs permission</string>
-    <string name="main_grant">Allow display over other apps</string>
-    <string name="main_open_apps">Open apps</string>
-    <string name="main_check_updates">Check for updates</string>
-    <string name="main_install_update">Install downloaded update</string>
     <string name="install_missing">No verified update is ready.</string>
     <string name="install_failed">No package installer was found on this device.</string>
 
