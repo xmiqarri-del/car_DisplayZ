@@ -17,6 +17,7 @@ import android.view.WindowManager
 import android.widget.ImageView
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.xmiqarri.cardisplayz.AppSettings
 import com.xmiqarri.cardisplayz.R
 import com.xmiqarri.cardisplayz.apps.AppGridActivity
 import com.xmiqarri.cardisplayz.dp
@@ -56,7 +57,7 @@ class OverlayService : Service() {
             .build()
         startForeground(NOTIFICATION_ID, notification)
 
-        if (!Settings.canDrawOverlays(this)) {
+        if (!AppSettings.floatingEnabled(this) || !Settings.canDrawOverlays(this)) {
             stopSelf()
             return START_NOT_STICKY
         }
@@ -165,10 +166,15 @@ class OverlayService : Service() {
         private const val CHANNEL_ID = "overlay"
         private const val NOTIFICATION_ID = 1001
 
-        /** Starts the floating button if the user has allowed it. Safe to call repeatedly. */
+        /** Starts the floating button if the user has turned it on and allowed it. Safe to call repeatedly. */
         fun start(context: Context) {
-            if (!Settings.canDrawOverlays(context)) return
+            if (!AppSettings.floatingEnabled(context) || !Settings.canDrawOverlays(context)) return
             ContextCompat.startForegroundService(context, Intent(context, OverlayService::class.java))
+        }
+
+        /** Removes the floating button and stops the service. */
+        fun stop(context: Context) {
+            context.stopService(Intent(context, OverlayService::class.java))
         }
     }
 }

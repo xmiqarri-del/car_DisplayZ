@@ -34,4 +34,32 @@
     <string name="cancel">Cancel</string>
     <string name="system_app_locked">System apps cannot be deleted</string>
     <string name="uninstall_failed">Could not open the uninstaller</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="section_floating">Floating button</string>
+    <string name="row_floating">Floating button</string>
+    <string name="floating_on">On</string>
+    <string name="floating_off">Off</string>
+    <string name="floating_needs_perm">Needs permission: tap to allow</string>
+    <string name="row_permission">Display over other apps</string>
+    <string name="perm_granted">Allowed</string>
+    <string name="perm_missing">Not allowed: tap to allow</string>
+    <string name="row_boot">Show when the car starts</string>
+    <string name="row_boot_sub">The floating button appears automatically</string>
+    <string name="section_apps">Apps</string>
+    <string name="row_open_apps">Open app list</string>
+    <string name="row_open_apps_sub">Press and hold an app to delete it</string>
+    <string name="section_updates">Updates</string>
+    <string name="row_auto_update">Check for updates automatically</string>
+    <string name="row_auto_update_sub">Every 6 hours, in the background</string>
+    <string name="row_check_now">Check now</string>
+    <string name="check_never">Never checked</string>
+    <string name="check_none">No update · checked %1$s</string>
+    <string name="check_available">Version %1$s available · checked %2$s</string>
+    <string name="check_error">Check failed · %1$s</string>
+    <string name="row_install">Install downloaded update</string>
+    <string name="row_install_sub">Tap to install</string>
+    <string name="section_about">About</string>
+    <string name="row_version">Version</string>
+    <string name="row_package">Package</string>
 </resources>

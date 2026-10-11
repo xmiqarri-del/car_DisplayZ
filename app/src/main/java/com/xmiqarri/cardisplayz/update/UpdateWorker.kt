@@ -16,6 +16,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.xmiqarri.cardisplayz.AppSettings
 import com.xmiqarri.cardisplayz.BuildConfig
 import com.xmiqarri.cardisplayz.MainActivity
 import com.xmiqarri.cardisplayz.R
@@ -23,40 +24,49 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 /**
- * Runs in the background every 6 hours on a network connection. It checks for a newer build,
- * downloads and verifies it (SHA-256), then posts a notification. It shows nothing when there
- * is no update or when the check fails; the user only sees the "ready to install" notification.
+ * Checks GitHub for a newer build, downloads and verifies it (SHA-256), then posts a notification.
+ * Runs every 6 hours when automatic checks are on, or once when the user presses "Check now".
+ * Nothing is installed without the user tapping install.
  */
 class UpdateWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
         val app = applicationContext
         return try {
-            val check = UpdateRepository().checkForUpdate(
+            when (val check = UpdateRepository().checkForUpdate(
                 BuildConfig.UPDATE_MANIFEST_URL,
                 BuildConfig.VERSION_CODE
-            )
-            if (check is UpdateCheck.Available) {
-                val info = check.info
-                val cached = ApkDownloader.cachedApk(app.cacheDir)
-                val apk = if (cached.exists() && ApkInstaller.verifyPackage(app, cached, info.versionCode)) {
-                    cached
-                } else {
-                    ApkDownloader(cacheDir = app.cacheDir).download(info)
-                }
-                if (ApkInstaller.verifyPackage(app, apk, info.versionCode)) {
-                    notifyReady(app, info)
-                } else {
-                    apk.delete()
+            )) {
+                is UpdateCheck.UpToDate -> AppSettings.recordCheck(app, "none", null)
+                is UpdateCheck.Available -> {
+                    AppSettings.recordCheck(app, "available", check.info.versionName)
+                    prepareUpdate(app, check.info)
                 }
             }
             Result.success()
         } catch (e: UpdateException) {
             // Bad manifest, hash mismatch or HTTP error: stay silent and try again next run.
+            AppSettings.recordCheck(app, "error", null)
             Result.success()
         } catch (e: IOException) {
             // No connection or interrupted transfer: WorkManager retries with backoff.
+            AppSettings.recordCheck(app, "error", null)
             Result.retry()
+        }
+    }
+
+    /** Downloads (or reuses) the verified APK and posts the "ready" notification. */
+    private fun prepareUpdate(app: Context, info: UpdateInfo) {
+        val cached = ApkDownloader.cachedApk(app.cacheDir)
+        val apk = if (cached.exists() && ApkInstaller.verifyPackage(app, cached, info.versionCode)) {
+            cached
+        } else {
+            ApkDownloader(cacheDir = app.cacheDir).download(info)
+        }
+        if (ApkInstaller.verifyPackage(app, apk, info.versionCode)) {
+            notifyReady(app, info)
+        } else {
+            apk.delete()
         }
     }
 
@@ -102,7 +112,7 @@ class UpdateWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         private const val CHANNEL_ID = "updates"
         private const val NOTIFICATION_ID = 2001
 
-        /** Runs one background check now (the button in the app). Downloads and notifies like the scheduled one. */
+        /** Runs one check now (the "Check now" row). Works even when automatic checks are off. */
         fun checkNow(context: Context) {
             val request = OneTimeWorkRequestBuilder<UpdateWorker>()
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
@@ -111,13 +121,19 @@ class UpdateWorker(context: Context, params: WorkerParameters) : CoroutineWorker
                 .enqueueUniqueWork(WORK_NAME_NOW, ExistingWorkPolicy.REPLACE, request)
         }
 
-        /** Schedules the periodic background check. Calling it again keeps the existing schedule. */
+        /** Schedules the 6-hourly check if the user keeps automatic checks on. */
         fun schedule(context: Context) {
+            if (!AppSettings.autoUpdate(context)) return
             val request = PeriodicWorkRequestBuilder<UpdateWorker>(6, TimeUnit.HOURS)
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
                 .build()
             WorkManager.getInstance(context)
                 .enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request)
+        }
+
+        /** Turns off the 6-hourly check (the user switched automatic checks off). */
+        fun cancelSchedule(context: Context) {
+            WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
         }
     }
 }

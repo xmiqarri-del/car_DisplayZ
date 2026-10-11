@@ -34,4 +34,32 @@
     <string name="cancel">إلغاء</string>
     <string name="system_app_locked">لا يمكن حذف تطبيقات النظام</string>
     <string name="uninstall_failed">تعذّر فتح نافذة الحذف</string>
+
+    <string name="settings_title">الإعدادات</string>
+    <string name="section_floating">الزر العائم</string>
+    <string name="row_floating">الزر العائم</string>
+    <string name="floating_on">يعمل</string>
+    <string name="floating_off">متوقف</string>
+    <string name="floating_needs_perm">يحتاج صلاحية: اضغط للسماح</string>
+    <string name="row_permission">العرض فوق التطبيقات الأخرى</string>
+    <string name="perm_granted">مسموح</string>
+    <string name="perm_missing">غير مسموح: اضغط للسماح</string>
+    <string name="row_boot">الظهور عند تشغيل السيارة</string>
+    <string name="row_boot_sub">يظهر الزر العائم تلقائياً</string>
+    <string name="section_apps">التطبيقات</string>
+    <string name="row_open_apps">فتح قائمة التطبيقات</string>
+    <string name="row_open_apps_sub">اضغط مطولاً على تطبيق لحذفه</string>
+    <string name="section_updates">التحديثات</string>
+    <string name="row_auto_update">فحص التحديثات تلقائياً</string>
+    <string name="row_auto_update_sub">كل 6 ساعات في الخلفية</string>
+    <string name="row_check_now">فحص الآن</string>
+    <string name="check_never">لم يتم الفحص بعد</string>
+    <string name="check_none">لا يوجد تحديث · فُحص %1$s</string>
+    <string name="check_available">يوجد الإصدار %1$s · فُحص %2$s</string>
+    <string name="check_error">فشل الفحص · %1$s</string>
+    <string name="row_install">تثبيت التحديث المحمّل</string>
+    <string name="row_install_sub">اضغط للتثبيت</string>
+    <string name="section_about">حول التطبيق</string>
+    <string name="row_version">الإصدار</string>
+    <string name="row_package">المعرّف</string>
 </resources>
