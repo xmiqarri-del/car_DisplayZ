@@ -169,7 +169,12 @@ class OverlayService : Service() {
         /** Starts the floating button if the user has turned it on and allowed it. Safe to call repeatedly. */
         fun start(context: Context) {
             if (!AppSettings.floatingEnabled(context) || !Settings.canDrawOverlays(context)) return
-            ContextCompat.startForegroundService(context, Intent(context, OverlayService::class.java))
+            try {
+                ContextCompat.startForegroundService(context, Intent(context, OverlayService::class.java))
+            } catch (e: RuntimeException) {
+                // Android can refuse a start from the background (ForegroundServiceStartNotAllowedException).
+                // Opening the app starts the floating button again, so nothing else is needed here.
+            }
         }
 
         /** Removes the floating button and stops the service. */
