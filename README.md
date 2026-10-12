@@ -8,7 +8,7 @@ Personal Android app for the car head unit (Android 11+).
 - **App grid** with the most used apps first, a "most used" row, search, and category chips. Press and hold an app to delete it. Some head units have no uninstaller, so deleting may not work there.
 - **Bottom buttons** (Back, Home, Recent apps, memory cleanup) through an accessibility service. The service does not read screen content.
 - **Memory cleanup** stops background processes of installed apps. System apps are never touched.
-- **Starts after boot** once the overlay permission is granted.
+- **Starts after boot** once the overlay permission is granted, and again after an update. Android starts an app after boot only if it has been opened since it was installed or last force-stopped, so open the app once after installing it and after any force stop. A force stop cannot be blocked by the app itself.
 - **Background updates**: checks GitHub every 6 hours. When a verified update is downloaded, a notification says it is ready. Nothing is installed until you tap install.
 - Update downloads are HTTPS-only, limited to GitHub hosts, and checked against the SHA-256 hash in `update.json`.
 
