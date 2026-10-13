@@ -58,7 +58,7 @@
     <string name="row_package">المعرّف</string>
 
     <string name="section_navigation">التنقل</string>
-    <string name="row_navbar">الأزرار السفلية (رجوع، رئيسية، تطبيقات)</string>
+    <string name="row_navbar">الأزرار العلوية (الإعدادات، الرئيسية، رجوع)</string>
     <string name="row_navbar_sub">تظهر عند تفعيل خدمة إمكانية الوصول بالأسفل</string>
     <string name="row_nav_service">خدمة إمكانية الوصول</string>
     <string name="nav_on">مفعّلة</string>
@@ -82,5 +82,13 @@
     <string name="nav_recents">التطبيقات الأخيرة</string>
     <string name="nav_clean">تنظيف الذاكرة</string>
     <string name="nav_service_label">التنقل في Car_DisplayZ</string>
-    <string name="nav_service_description">يعرض أزرار الرجوع والرئيسية والتطبيقات الأخيرة وتنظيف الذاكرة أسفل الشاشة. لا يقرأ محتوى الشاشة.</string>
+    <string name="nav_service_description">يعرض أزرار الإعدادات والرئيسية والرجوع أعلى الشاشة. لا يقرأ محتوى الشاشة.</string>
+    <string name="row_grant">منح الصلاحيات عبر ADB</string>
+    <string name="row_grant_sub">يشغّل الزر العائم والأزرار العلوية والإشعارات والتحديثات. يحتاج ADB على المنفذ 5555 (نفّذ adb tcpip 5555 مرة واحدة من الكمبيوتر).</string>
+    <string name="grant_started">جارٍ الاتصال بـ ADB… وافق على الطلب الذي يظهر على الشاشة إن ظهر.</string>
+    <string name="grant_no_adb">تعذّر الوصول إلى ADB على المنفذ %1$d.\n\nفعّله مرة واحدة من الكمبيوتر:\nadb tcpip %1$d\n\nالتفاصيل: %2$s</string>
+    <string name="grant_step_overlay">الظهور فوق التطبيقات (الزر العائم)</string>
+    <string name="grant_step_notifications">الإشعارات</string>
+    <string name="grant_step_install">تثبيت التحديثات</string>
+    <string name="grant_step_accessibility">خدمة إمكانية الوصول (الأزرار العلوية)</string>
 </resources>

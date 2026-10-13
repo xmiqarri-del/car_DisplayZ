@@ -1,56 +1,99 @@
 package com.xmiqarri.cardisplayz.adb
 
 import android.content.Context
+import com.xmiqarri.cardisplayz.R
 import dadb.AdbKeyPair
 import dadb.Dadb
 import java.io.File
 
 /**
- * Grants this app its own permissions by sending `pm grant` through ADB to this same device.
- * It connects to the device's own ADB on localhost. ADB must already be listening on port 5555,
- * which the user turns on once (adb tcpip 5555, or Wireless debugging). The app cannot turn it on itself.
- * The key pair is generated once and kept in the app's private storage.
+ * Gives this app the access it needs by sending shell commands through ADB to this same device.
+ * It connects to the device's own ADB on localhost:5555. ADB must already be listening on that port,
+ * which the user turns on once from a computer (adb tcpip 5555). The app cannot turn it on itself.
+ * The key pair is generated once and kept in the app's private storage. The first connection shows
+ * the system's "Allow debugging?" prompt on the screen.
+ *
+ * Every command changes only this app's own access. Enabling the accessibility service adds this
+ * app's service to the enabled list and keeps every other service already in it.
  */
 object AdbGranter {
 
-    const val PACKAGE = "com.xmiqarri.cardisplayz"
     const val PORT = 5555
+    private const val HOST = "127.0.0.1"
 
-    /** Permissions this app needs that only ADB can grant. Each must be declared in AndroidManifest.xml. */
-    val PERMISSIONS = listOf("android.permission.WRITE_SECURE_SETTINGS")
+    /** Component names only. Anything else in the setting is left untouched and reported. */
+    private val COMPONENT_LIST = Regex("[A-Za-z0-9_.$/:]+")
 
-    class Result(
-        val granted: List<String>,
-        val failed: Map<String, String>,
-        val error: String?,
-    )
+    class Step(val labelRes: Int, val ok: Boolean, val detail: String)
+
+    /** [error] is set when ADB could not be reached at all; then [steps] is empty. */
+    class Result(val steps: List<Step>, val error: String?)
 
     /** Blocking call: run it off the main thread. */
     fun grantAll(context: Context): Result {
+        val pkg = context.packageName
         val dadb = try {
-            Dadb.create("127.0.0.1", PORT, loadOrCreateKey(context))
+            Dadb.create(HOST, PORT, loadOrCreateKey(context))
         } catch (e: Exception) {
-            return Result(emptyList(), emptyMap(), e.message ?: e.javaClass.simpleName)
+            return Result(emptyList(), describe(e))
         }
-        return try {
-            val granted = mutableListOf<String>()
-            val failed = mutableMapOf<String, String>()
-            for (permission in PERMISSIONS) {
-                val response = dadb.shell("pm grant $PACKAGE $permission")
-                val output = response.allOutput.trim()
-                if (response.exitCode == 0 && !output.contains("Exception") && !output.contains("Error")) {
-                    granted += permission
-                } else {
-                    failed[permission] = output.ifEmpty { "exit ${response.exitCode}" }
-                }
+        try {
+            // Fails here when nothing listens on the port or the prompt on the screen is refused.
+            try {
+                dadb.shell("echo ok")
+            } catch (e: Exception) {
+                return Result(emptyList(), describe(e))
             }
-            Result(granted, failed, null)
-        } catch (e: Exception) {
-            Result(emptyList(), emptyMap(), e.message ?: e.javaClass.simpleName)
+            val steps = listOf(
+                run(dadb, R.string.grant_step_overlay, "appops set $pkg SYSTEM_ALERT_WINDOW allow"),
+                run(dadb, R.string.grant_step_notifications, "pm grant $pkg android.permission.POST_NOTIFICATIONS"),
+                run(dadb, R.string.grant_step_install, "appops set $pkg REQUEST_INSTALL_PACKAGES allow"),
+                enableAccessibility(dadb, pkg),
+            )
+            return Result(steps, null)
         } finally {
             runCatching { dadb.close() }
         }
     }
+
+    private fun run(dadb: Dadb, labelRes: Int, command: String): Step = try {
+        val response = dadb.shell(command)
+        val output = response.allOutput.trim()
+        val ok = response.exitCode == 0 && !output.contains("Exception") && !output.startsWith("Error")
+        Step(labelRes, ok, output)
+    } catch (e: Exception) {
+        Step(labelRes, false, describe(e))
+    }
+
+    /** Adds the top-buttons service to the enabled accessibility services, keeping the others. */
+    private fun enableAccessibility(dadb: Dadb, pkg: String): Step {
+        val label = R.string.grant_step_accessibility
+        return try {
+            val fullName = "$pkg/$pkg.nav.NavBarService"
+            val shortName = "$pkg/.nav.NavBarService"
+            val current = dadb.shell("settings get secure enabled_accessibility_services").output.trim()
+            val enabled = if (current.isEmpty() || current == "null") {
+                emptyList()
+            } else {
+                current.split(':').filter { it.isNotBlank() }
+            }
+            if (enabled.none { it == fullName || it == shortName }) {
+                val updated = (enabled + fullName).joinToString(":")
+                if (!updated.matches(COMPONENT_LIST)) {
+                    return Step(label, false, "Unexpected value, left unchanged: $current")
+                }
+                // Single quotes: a '$' in an inner class name must reach the setting unchanged.
+                val put = dadb.shell("settings put secure enabled_accessibility_services '$updated'")
+                if (put.exitCode != 0) return Step(label, false, put.allOutput.trim())
+            }
+            val on = dadb.shell("settings put secure accessibility_enabled 1")
+            Step(label, on.exitCode == 0, on.allOutput.trim())
+        } catch (e: Exception) {
+            Step(label, false, describe(e))
+        }
+    }
+
+    private fun describe(e: Exception): String = e.message ?: e.javaClass.simpleName
 
     private fun loadOrCreateKey(context: Context): AdbKeyPair {
         val dir = File(context.filesDir, "adb").apply { mkdirs() }

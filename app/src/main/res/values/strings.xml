@@ -58,7 +58,7 @@
     <string name="row_package">Package</string>
 
     <string name="section_navigation">Navigation</string>
-    <string name="row_navbar">Bottom buttons (Back, Home, Recents)</string>
+    <string name="row_navbar">Top buttons (Settings, Home, Back)</string>
     <string name="row_navbar_sub">Shown when the accessibility service below is on</string>
     <string name="row_nav_service">Accessibility service</string>
     <string name="nav_on">On</string>
@@ -82,11 +82,13 @@
     <string name="nav_recents">Recent apps</string>
     <string name="nav_clean">Clean memory</string>
     <string name="nav_service_label">Car_DisplayZ navigation</string>
-    <string name="nav_service_description">Shows Back, Home, Recent apps and memory cleanup buttons at the bottom of the screen. It does not read screen content.</string>
-    <string name="row_grant">Grant permissions</string>
-    <string name="row_grant_sub">Uses ADB on this device. Wireless debugging must be on.</string>
-    <string name="grant_started">Granting permissions…</string>
-    <string name="grant_done">Permissions granted: %1$d</string>
-    <string name="grant_partial">Granted %1$d, failed %2$d</string>
-    <string name="grant_no_adb">ADB not available: %1$s</string>
+    <string name="nav_service_description">Shows Settings, Home and Back buttons at the top of the screen. It does not read screen content.</string>
+    <string name="row_grant">Grant permissions with ADB</string>
+    <string name="row_grant_sub">Turns on the floating button, top buttons, notifications and updates. Needs ADB on port 5555 (run adb tcpip 5555 once from a computer).</string>
+    <string name="grant_started">Connecting to ADB… Accept the prompt on the screen if it appears.</string>
+    <string name="grant_no_adb">ADB is not reachable on port %1$d.\n\nTurn it on once from a computer:\nadb tcpip %1$d\n\nDetails: %2$s</string>
+    <string name="grant_step_overlay">Display over other apps (floating button)</string>
+    <string name="grant_step_notifications">Notifications</string>
+    <string name="grant_step_install">Install updates</string>
+    <string name="grant_step_accessibility">Accessibility service (top buttons)</string>
 </resources>

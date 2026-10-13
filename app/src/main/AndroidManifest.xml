@@ -64,7 +64,7 @@
             android:name=".overlay.OverlayService"
             android:exported="false" />
 
-        <!-- Bottom bar: Back, Home, Recents, memory cleanup. Enabled by the user in Accessibility settings. -->
+        <!-- Top bar: Settings, Home, Back. Enabled in Accessibility settings or by the ADB grant button. -->
         <service
             android:name=".nav.NavBarService"
             android:exported="true"

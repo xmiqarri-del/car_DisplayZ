@@ -1,6 +1,7 @@
 package com.xmiqarri.cardisplayz
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -194,17 +195,26 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    /** Sends the permission grants through ADB on this device, off the main thread. */
+    /** Sends the grant commands through ADB on this device, off the main thread, then shows each result. */
     private fun grantPermissions() {
-        Toast.makeText(this, R.string.grant_started, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.grant_started, Toast.LENGTH_LONG).show()
         lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) { AdbGranter.grantAll(this@MainActivity) }
-            val text = when {
-                result.error != null -> getString(R.string.grant_no_adb, result.error)
-                result.failed.isEmpty() -> getString(R.string.grant_done, result.granted.size)
-                else -> getString(R.string.grant_partial, result.granted.size, result.failed.size)
+            val message = if (result.error != null) {
+                getString(R.string.grant_no_adb, AdbGranter.PORT, result.error)
+            } else {
+                result.steps.joinToString("\n") { step ->
+                    val line = (if (step.ok) "✓ " else "✗ ") + getString(step.labelRes)
+                    if (step.ok || step.detail.isEmpty()) line else line + "\n    " + step.detail.take(200)
+                }
             }
-            Toast.makeText(this@MainActivity, text, Toast.LENGTH_LONG).show()
+            AlertDialog.Builder(this@MainActivity)
+                .setTitle(R.string.row_grant)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+            if (AppSettings.floatingEnabled(this@MainActivity)) OverlayService.start(this@MainActivity)
+            render()
         }
     }
 
