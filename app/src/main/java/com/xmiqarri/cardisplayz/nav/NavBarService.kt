@@ -1,6 +1,7 @@
 package com.xmiqarri.cardisplayz.nav
 
 import android.accessibilityservice.AccessibilityService
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.PixelFormat
 import android.graphics.drawable.GradientDrawable
@@ -10,16 +11,18 @@ import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.widget.ImageButton
 import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.TextView
 import com.xmiqarri.cardisplayz.AppSettings
+import com.xmiqarri.cardisplayz.MainActivity
 import com.xmiqarri.cardisplayz.R
-import com.xmiqarri.cardisplayz.apps.MemoryCleaner
+import com.xmiqarri.cardisplayz.WRAP
 import com.xmiqarri.cardisplayz.dp
 
 /**
- * Accessibility service used only for the system buttons: Back, Home, Recent apps and memory cleanup.
- * It shows a small bar at the bottom of the screen. It does not read screen content
- * (see res/xml/accessibility_service_config.xml). The user turns it on in Android's Accessibility settings.
+ * Accessibility service that shows the system buttons at the top of the screen, over every app:
+ * Settings, Home and Back. Each button is a round icon with its name written under it.
+ * It does not read screen content (see res/xml/accessibility_service_config.xml).
+ * The user turns it on in Android's Accessibility settings.
  */
 class NavBarService : AccessibilityService() {
 
@@ -46,7 +49,7 @@ class NavBarService : AccessibilityService() {
         super.onDestroy()
     }
 
-    /** Shows or hides the bottom bar according to the user's setting. */
+    /** Shows or hides the top bar according to the user's setting. */
     fun refreshBar() {
         if (AppSettings.navBarEnabled(this)) addBar() else removeBar()
     }
@@ -57,29 +60,26 @@ class NavBarService : AccessibilityService() {
 
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setPadding(dp(8), dp(6), dp(8), dp(6))
+            gravity = Gravity.CENTER
+            setPadding(dp(12), dp(8), dp(12), dp(8))
             background = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                cornerRadius = dp(28).toFloat()
-                setColor(0xE6121E33.toInt())
+                cornerRadius = dp(32).toFloat()
+                setColor(0x66000000)
             }
         }
-        container.addView(button(R.drawable.ic_back, R.string.nav_back) {
-            performGlobalAction(GLOBAL_ACTION_BACK)
+        container.addView(navItem(android.R.drawable.ic_menu_preferences, getString(R.string.settings_title)) {
+            openSettings()
         })
-        container.addView(button(R.drawable.ic_home, R.string.nav_home) {
+        container.addView(navItem(R.drawable.ic_home, getString(R.string.nav_home)) {
             performGlobalAction(GLOBAL_ACTION_HOME)
         })
-        container.addView(button(R.drawable.ic_recents, R.string.nav_recents) {
-            performGlobalAction(GLOBAL_ACTION_RECENTS)
-        })
-        container.addView(button(R.drawable.ic_clean, R.string.nav_clean) {
-            val stopped = MemoryCleaner.clean(this)
-            Toast.makeText(this, getString(R.string.clean_done, stopped), Toast.LENGTH_SHORT).show()
+        container.addView(navItem(R.drawable.ic_back, getString(R.string.nav_back)) {
+            performGlobalAction(GLOBAL_ACTION_BACK)
         })
 
         // NOT_FOCUSABLE: the bar never takes keyboard focus. NOT_TOUCH_MODAL: touches outside
-        // the bar always reach the car's own screens underneath.
+        // the bar always reach the screens underneath.
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -87,8 +87,8 @@ class NavBarService : AccessibilityService() {
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
             PixelFormat.TRANSLUCENT
         ).apply {
-            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            y = dp(6)
+            gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+            y = dp(8)
         }
 
         try {
@@ -105,14 +105,41 @@ class NavBarService : AccessibilityService() {
         bar = null
     }
 
-    private fun button(iconRes: Int, labelRes: Int, onClick: () -> Unit): ImageButton =
-        ImageButton(this).apply {
-            setImageResource(iconRes)
-            setImageTintList(ColorStateList.valueOf(0xFFE6EEF8.toInt()))
-            setBackgroundColor(0x00000000)
-            contentDescription = this@NavBarService.getString(labelRes)
-            layoutParams = LinearLayout.LayoutParams(dp(52), dp(52))
-            setOnClickListener { onClick() }
+    /** Opens the Car_DisplayZ settings screen from any app. */
+    private fun openSettings() {
+        startActivity(
+            Intent(this, MainActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        )
+    }
+
+    /** A round button with its name written under it. */
+    private fun navItem(iconRes: Int, label: String, onClick: () -> Unit): LinearLayout =
+        LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply {
+                marginStart = dp(10)
+                marginEnd = dp(10)
+            }
+            addView(ImageButton(this@NavBarService).apply {
+                setImageResource(iconRes)
+                setImageTintList(ColorStateList.valueOf(0xFFE6EEF8.toInt()))
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(0xE6121E33.toInt())
+                }
+                contentDescription = label
+                layoutParams = LinearLayout.LayoutParams(dp(56), dp(56))
+                setOnClickListener { onClick() }
+            })
+            addView(TextView(this@NavBarService).apply {
+                text = label
+                textSize = 12f
+                setTextColor(0xFFE6EEF8.toInt())
+                gravity = Gravity.CENTER
+                setPadding(0, dp(4), 0, 0)
+            })
         }
 
     companion object {
