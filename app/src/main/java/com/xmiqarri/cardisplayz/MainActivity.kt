@@ -27,6 +27,11 @@ import com.xmiqarri.cardisplayz.update.ApkDownloader
 import com.xmiqarri.cardisplayz.update.ApkInstaller
 import com.xmiqarri.cardisplayz.update.UpdateWorker
 import java.io.File
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import com.xmiqarri.cardisplayz.adb.AdbGranter
 
 /**
  * Settings screen, laid out like Android's own settings: grouped sections, rows and switches.
@@ -145,6 +150,13 @@ class MainActivity : ComponentActivity() {
             },
         )
 
+        addRow(
+            title = getString(R.string.row_grant),
+            subtitle = getString(R.string.row_grant_sub),
+            trailing = null,
+            onClick = { grantPermissions() },
+        )
+
         section(getString(R.string.section_updates))
         addRow(
             title = getString(R.string.row_auto_update),
@@ -180,6 +192,20 @@ class MainActivity : ComponentActivity() {
             trailing = null,
             onClick = null,
         )
+    }
+
+    /** Sends the permission grants through ADB on this device, off the main thread. */
+    private fun grantPermissions() {
+        Toast.makeText(this, R.string.grant_started, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) { AdbGranter.grantAll(this@MainActivity) }
+            val text = when {
+                result.error != null -> getString(R.string.grant_no_adb, result.error)
+                result.failed.isEmpty() -> getString(R.string.grant_done, result.granted.size)
+                else -> getString(R.string.grant_partial, result.granted.size, result.failed.size)
+            }
+            Toast.makeText(this@MainActivity, text, Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun section(title: String) {

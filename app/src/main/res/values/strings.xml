@@ -83,4 +83,10 @@
     <string name="nav_clean">Clean memory</string>
     <string name="nav_service_label">Car_DisplayZ navigation</string>
     <string name="nav_service_description">Shows Back, Home, Recent apps and memory cleanup buttons at the bottom of the screen. It does not read screen content.</string>
+    <string name="row_grant">Grant permissions</string>
+    <string name="row_grant_sub">Uses ADB on this device. Wireless debugging must be on.</string>
+    <string name="grant_started">Granting permissions…</string>
+    <string name="grant_done">Permissions granted: %1$d</string>
+    <string name="grant_partial">Granted %1$d, failed %2$d</string>
+    <string name="grant_no_adb">ADB not available: %1$s</string>
 </resources>
