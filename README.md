@@ -21,6 +21,7 @@ Personal Android app for the car head unit (Android 11+).
    - `KEYSTORE_B64`: base64 of the release keystore
    - `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`
 5. Keep the release keystore safe. **Every update must be signed with the same key**, or Android refuses to install it over the current app.
+6. Optional: add the secret `INSTALLER_DISPATCH_TOKEN` so the web installer (`xmiqarri-del/Web-Installer`) switches to a new release right after it is published. Use a fine-grained token limited to that one repository with **Actions: Read and write**. Without it, the web installer still follows releases on its hourly check.
 
 ## Publishing an update
 
