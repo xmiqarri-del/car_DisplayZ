@@ -63,6 +63,17 @@
     <string name="row_nav_service">Accessibility service</string>
     <string name="nav_on">On</string>
     <string name="nav_off">Off: tap to turn it on in Accessibility settings</string>
+    <string name="section_device">Device settings</string>
+    <string name="row_wifi">Wi-Fi</string>
+    <string name="row_bluetooth">Bluetooth</string>
+    <string name="row_display">Display</string>
+    <string name="row_sound">Sound</string>
+    <string name="row_datetime">Date and time</string>
+    <string name="row_apps_settings">Apps</string>
+    <string name="row_location">Location</string>
+    <string name="row_storage">Storage</string>
+    <string name="row_device_info">About device</string>
+    <string name="row_all_settings">All settings</string>
     <string name="row_clean">Clean memory</string>
     <string name="row_clean_sub">Stops apps running in the background</string>
     <string name="clean_done">Background apps stopped: %1$d</string>

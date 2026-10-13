@@ -1,6 +1,7 @@
 package com.xmiqarri.cardisplayz
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
@@ -116,6 +117,16 @@ class MainActivity : ComponentActivity() {
             trailing = null,
             onClick = { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) },
         )
+
+        section(getString(R.string.section_device))
+        deviceSettingRows().forEach { (titleRes, action) ->
+            addRow(
+                title = getString(titleRes),
+                subtitle = null,
+                trailing = null,
+                onClick = { openSystemSettings(action) },
+            )
+        }
 
         section(getString(R.string.section_apps))
         addRow(
@@ -268,6 +279,29 @@ class MainActivity : ComponentActivity() {
         AppSettings.setAutoUpdate(this, on)
         if (on) UpdateWorker.schedule(this) else UpdateWorker.cancelSchedule(this)
         render()
+    }
+
+    /** Shortcuts to Android's own settings pages. Only these fixed actions are ever opened. */
+    private fun deviceSettingRows(): List<Pair<Int, String>> = listOf(
+        R.string.row_wifi to Settings.ACTION_WIFI_SETTINGS,
+        R.string.row_bluetooth to Settings.ACTION_BLUETOOTH_SETTINGS,
+        R.string.row_display to Settings.ACTION_DISPLAY_SETTINGS,
+        R.string.row_sound to Settings.ACTION_SOUND_SETTINGS,
+        R.string.row_datetime to Settings.ACTION_DATE_SETTINGS,
+        R.string.row_apps_settings to Settings.ACTION_APPLICATION_SETTINGS,
+        R.string.row_location to Settings.ACTION_LOCATION_SOURCE_SETTINGS,
+        R.string.row_storage to Settings.ACTION_INTERNAL_STORAGE_SETTINGS,
+        R.string.row_device_info to Settings.ACTION_DEVICE_INFO_SETTINGS,
+        R.string.row_all_settings to Settings.ACTION_SETTINGS,
+    )
+
+    /** Opens a system settings page, or the main settings screen if this device lacks it. */
+    private fun openSystemSettings(action: String) {
+        try {
+            startActivity(Intent(action))
+        } catch (e: ActivityNotFoundException) {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
+        }
     }
 
     private fun openOverlayPermission() {

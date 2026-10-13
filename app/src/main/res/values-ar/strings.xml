@@ -63,6 +63,17 @@
     <string name="row_nav_service">خدمة إمكانية الوصول</string>
     <string name="nav_on">مفعّلة</string>
     <string name="nav_off">غير مفعّلة: اضغط للتفعيل من إعدادات إمكانية الوصول</string>
+    <string name="section_device">إعدادات الجهاز</string>
+    <string name="row_wifi">الواي فاي</string>
+    <string name="row_bluetooth">البلوتوث</string>
+    <string name="row_display">الشاشة</string>
+    <string name="row_sound">الصوت</string>
+    <string name="row_datetime">التاريخ والوقت</string>
+    <string name="row_apps_settings">التطبيقات</string>
+    <string name="row_location">الموقع</string>
+    <string name="row_storage">التخزين</string>
+    <string name="row_device_info">حول الجهاز</string>
+    <string name="row_all_settings">جميع الإعدادات</string>
     <string name="row_clean">تنظيف الذاكرة</string>
     <string name="row_clean_sub">يوقف التطبيقات التي تعمل في الخلفية</string>
     <string name="clean_done">تم إيقاف %1$d تطبيقات في الخلفية</string>
