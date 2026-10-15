@@ -136,7 +136,7 @@ class AppPermissionsActivity : ComponentActivity() {
                     Entry(permission, label, Kind.APP_OP, allowed)
                 }
                 definition != null &&
-                    PermissionInfo.getProtection(definition.protectionLevel) == PermissionInfo.PROTECTION_DANGEROUS ->
+                    (definition.protectionLevel and 0xF) == PermissionInfo.PROTECTION_DANGEROUS ->
                     Entry(permission, label, Kind.RUNTIME, granted)
                 else -> Entry(permission, label, Kind.OTHER, granted)
             }
