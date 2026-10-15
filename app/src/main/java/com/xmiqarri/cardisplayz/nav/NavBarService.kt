@@ -25,7 +25,8 @@ import com.xmiqarri.cardisplayz.dp
 /**
  * Accessibility service that shows the system buttons at the top of the screen, over every app:
  * Settings, Home and Back. Each button is a round icon with its name written under it.
- * The bar can be dragged to any place on the screen, and can fade away when not in use.
+ * The bar can be dragged to any place on the screen, can be resized and made more transparent,
+ * and can fade away when not in use.
  * It does not read screen content (see res/xml/accessibility_service_config.xml).
  * The user turns it on in Android's Accessibility settings.
  */
@@ -35,7 +36,9 @@ class NavBarService : AccessibilityService() {
     private var bar: View? = null
     private var barParams: WindowManager.LayoutParams? = null
     private val handler = Handler(Looper.getMainLooper())
-    private val fadeOut = Runnable { bar?.animate()?.alpha(IDLE_ALPHA)?.setDuration(FADE_MS)?.start() }
+    private val fadeOut = Runnable {
+        bar?.animate()?.alpha(opacity() * IDLE_FRACTION)?.setDuration(FADE_MS)?.start()
+    }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -57,15 +60,22 @@ class NavBarService : AccessibilityService() {
         super.onDestroy()
     }
 
-    /** Shows or hides the top bar according to the user's settings. Rebuilding it applies any change. */
+    /**
+     * Shows or hides the top bar according to the user's settings. Rebuilding it applies any change
+     * to size or opacity, and keeps the bar where the user last left it.
+     */
     fun refreshBar() {
+        val here = barParams?.let { it.x to it.y }
         removeBar()
-        if (AppSettings.navBarEnabled(this)) addBar()
+        if (AppSettings.navBarEnabled(this)) addBar(here)
     }
 
-    private fun addBar() {
+    private fun opacity(): Float = AppSettings.navOpacity(this) / 100f
+
+    private fun addBar(startAt: Pair<Int, Int>?) {
         if (bar != null) return
         val wm = getSystemService(WINDOW_SERVICE) as WindowManager
+        val sizeDp = AppSettings.navSizeDp(this)
 
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -75,7 +85,7 @@ class NavBarService : AccessibilityService() {
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            val saved = AppSettings.navPosition(this@NavBarService)
+            val saved = startAt ?: AppSettings.navPosition(this@NavBarService)
             x = saved?.first ?: 0
             y = saved?.second ?: dp(8)
         }
@@ -92,13 +102,13 @@ class NavBarService : AccessibilityService() {
             // Touches on the padding around the buttons also drag the bar.
             setOnTouchListener(dragListener(wm, params, this) {})
         }
-        container.addView(navItem(android.R.drawable.ic_menu_preferences, getString(R.string.settings_title), wm, params, container) {
+        container.addView(navItem(android.R.drawable.ic_menu_preferences, getString(R.string.settings_title), sizeDp, wm, params, container) {
             openSettings()
         })
-        container.addView(navItem(R.drawable.ic_home, getString(R.string.nav_home), wm, params, container) {
+        container.addView(navItem(R.drawable.ic_home, getString(R.string.nav_home), sizeDp, wm, params, container) {
             performGlobalAction(GLOBAL_ACTION_HOME)
         })
-        container.addView(navItem(R.drawable.ic_back, getString(R.string.nav_back), wm, params, container) {
+        container.addView(navItem(R.drawable.ic_back, getString(R.string.nav_back), sizeDp, wm, params, container) {
             performGlobalAction(GLOBAL_ACTION_BACK)
         })
 
@@ -107,7 +117,7 @@ class NavBarService : AccessibilityService() {
             windowManager = wm
             bar = container
             barParams = params
-            if (AppSettings.navPosition(this) == null) {
+            if (startAt == null && AppSettings.navPosition(this) == null) {
                 // First run: put the bar in the middle of the top edge once its width is known.
                 container.post { centreBar(wm, container, params) }
             }
@@ -130,12 +140,12 @@ class NavBarService : AccessibilityService() {
         barParams = null
     }
 
-    /** Brings the bar back to full strength and, when auto-hide is on, starts the fade-out timer again. */
+    /** Brings the bar back to the chosen opacity and, when auto-hide is on, starts the fade-out timer again. */
     private fun wake() {
         val view = bar ?: return
         handler.removeCallbacks(fadeOut)
         view.animate().cancel()
-        view.alpha = 1f
+        view.alpha = opacity()
         if (AppSettings.navAutoHide(this)) handler.postDelayed(fadeOut, IDLE_MS)
     }
 
@@ -172,6 +182,7 @@ class NavBarService : AccessibilityService() {
     private fun navItem(
         iconRes: Int,
         label: String,
+        sizeDp: Int,
         wm: WindowManager,
         params: WindowManager.LayoutParams,
         container: View,
@@ -194,12 +205,12 @@ class NavBarService : AccessibilityService() {
                     setColor(0xE6121E33.toInt())
                 }
                 contentDescription = label
-                layoutParams = LinearLayout.LayoutParams(dp(56), dp(56))
+                layoutParams = LinearLayout.LayoutParams(dp(sizeDp), dp(sizeDp))
                 setOnTouchListener(listener)
             })
             addView(TextView(this@NavBarService).apply {
                 text = label
-                textSize = 12f
+                textSize = 12f * sizeDp / 56f
                 setTextColor(0xFFE6EEF8.toInt())
                 gravity = Gravity.CENTER
                 setPadding(0, dp(4), 0, 0)
@@ -216,6 +227,8 @@ class NavBarService : AccessibilityService() {
 
         private const val IDLE_MS = 4000L
         private const val FADE_MS = 400L
-        private const val IDLE_ALPHA = 0.15f
+
+        /** Share of the chosen opacity that remains while the bar is faded out. */
+        private const val IDLE_FRACTION = 0.15f
     }
 }

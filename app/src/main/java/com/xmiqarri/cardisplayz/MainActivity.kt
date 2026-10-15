@@ -147,6 +147,24 @@ class MainActivity : ComponentActivity() {
             },
             onClick = null,
         )
+        sliderRow(
+            label = { v -> getString(R.string.row_nav_size, v) },
+            min = 36,
+            max = 72,
+            value = AppSettings.navSizeDp(this),
+        ) { v ->
+            AppSettings.setNavSizeDp(this, v)
+            NavBarService.instance?.refreshBar()
+        }
+        sliderRow(
+            label = { v -> getString(R.string.row_nav_alpha, v) },
+            min = 20,
+            max = 100,
+            value = AppSettings.navOpacity(this),
+        ) { v ->
+            AppSettings.setNavOpacity(this, v)
+            NavBarService.instance?.refreshBar()
+        }
         addRow(
             title = getString(R.string.row_nav_service),
             subtitle = getString(if (NavBarService.instance != null) R.string.nav_on else R.string.nav_off),
@@ -176,8 +194,15 @@ class MainActivity : ComponentActivity() {
             subtitle = getString(R.string.row_clean_sub),
             trailing = null,
             onClick = {
-                val stopped = MemoryCleaner.clean(this)
-                Toast.makeText(this, getString(R.string.clean_done, stopped), Toast.LENGTH_SHORT).show()
+                lifecycleScope.launch {
+                    val stopped = withContext(Dispatchers.IO) { MemoryCleaner.clean(this@MainActivity) }
+                    val message = if (stopped == null) {
+                        getString(R.string.clean_no_adb, AdbGranter.PORT)
+                    } else {
+                        getString(R.string.clean_done, stopped)
+                    }
+                    Toast.makeText(this@MainActivity, message, Toast.LENGTH_LONG).show()
+                }
             },
         )
 

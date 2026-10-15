@@ -41,6 +41,20 @@ object AppSettings {
         prefs(context).edit().putInt("floating_size_dp", dp).apply()
     }
 
+    /** Diameter of each top button in dp (36..72). The labels scale with it. */
+    fun navSizeDp(context: Context): Int = prefs(context).getInt("nav_size_dp", 56)
+
+    fun setNavSizeDp(context: Context, dp: Int) {
+        prefs(context).edit().putInt("nav_size_dp", dp).apply()
+    }
+
+    /** Opacity of the top buttons in percent (20..100). */
+    fun navOpacity(context: Context): Int = prefs(context).getInt("nav_opacity", 100)
+
+    fun setNavOpacity(context: Context, percent: Int) {
+        prefs(context).edit().putInt("nav_opacity", percent).apply()
+    }
+
     /** Fade the top buttons after a few idle seconds. */
     fun navAutoHide(context: Context): Boolean = prefs(context).getBoolean("nav_autohide", false)
 

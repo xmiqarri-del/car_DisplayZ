@@ -134,6 +134,32 @@ object AdbGranter {
         }
     }
 
+    /** Package names only, so nothing else can reach the shell command. */
+    private val PACKAGE_NAME = Regex("[A-Za-z0-9_.]+")
+
+    /**
+     * Force-stops each package through ADB, which ends every process of the app, including ones
+     * that are on screen or running a service. Returns how many were sent, or null when ADB is not reachable.
+     * Blocking: run it off the main thread.
+     */
+    fun forceStop(context: Context, packages: List<String>): Int? {
+        val safe = packages.filter { PACKAGE_NAME.matches(it) }
+        if (safe.isEmpty()) return 0
+        val dadb = try {
+            Dadb.create(HOST, PORT, loadOrCreateKey(context))
+        } catch (e: Exception) {
+            return null
+        }
+        try {
+            dadb.shell(safe.joinToString("; ") { "am force-stop $it 2>/dev/null" } + "; echo done")
+            return safe.size
+        } catch (e: Exception) {
+            return null
+        } finally {
+            runCatching { dadb.close() }
+        }
+    }
+
     private fun describe(e: Exception): String = e.message ?: e.javaClass.simpleName
 
     private fun loadOrCreateKey(context: Context): AdbKeyPair {

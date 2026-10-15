@@ -76,7 +76,7 @@
     <string name="row_all_settings">All settings</string>
     <string name="row_clean">Clean memory</string>
     <string name="row_clean_sub">Stops apps running in the background</string>
-    <string name="clean_done">Background apps stopped: %1$d</string>
+    <string name="clean_done">Apps stopped: %1$d</string>
     <string name="nav_back">Back</string>
     <string name="nav_home">Home</string>
     <string name="nav_recents">Recent apps</string>
@@ -97,4 +97,7 @@
     <string name="row_size">Floating button size: %d</string>
     <string name="row_nav_autohide">Hide top buttons automatically</string>
     <string name="row_nav_autohide_sub">They fade after a few seconds of no use and reappear when touched. You can drag them anywhere on the screen</string>
+    <string name="row_nav_size">Top buttons size: %d</string>
+    <string name="row_nav_alpha">Top buttons opacity: %d%%</string>
+    <string name="clean_no_adb">Could not reach ADB. Turn on ADB on port %d first</string>
 </resources>

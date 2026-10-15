@@ -86,16 +86,17 @@ class OverlayService : Service() {
         val size = dp(sizeDp)
         // The icon keeps the same proportion inside the circle at every size (9 of 40 dp at the default).
         val paddingPx = dp(sizeDp * 9 / 40)
-        val alpha = AppSettings.floatingAlpha(this) * 255 / 100
-        val color = (alpha shl 24) or 0x002BB3C0
+        // Opacity is set on the whole view, so the circle and the icon fade together.
+        val opacity = AppSettings.floatingAlpha(this) / 100f
 
         val view = ImageView(this).apply {
             setImageResource(R.drawable.ic_grid)
             setPadding(paddingPx, paddingPx, paddingPx, paddingPx)
             background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(color)
+                setColor(0xFF2BB3C0.toInt())
             }
+            alpha = opacity
             contentDescription = getString(R.string.overlay_button_desc)
         }
 

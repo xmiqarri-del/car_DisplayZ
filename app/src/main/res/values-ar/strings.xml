@@ -76,7 +76,7 @@
     <string name="row_all_settings">جميع الإعدادات</string>
     <string name="row_clean">تنظيف الذاكرة</string>
     <string name="row_clean_sub">يوقف التطبيقات التي تعمل في الخلفية</string>
-    <string name="clean_done">تم إيقاف %1$d تطبيقات في الخلفية</string>
+    <string name="clean_done">تم إيقاف %1$d تطبيقات</string>
     <string name="nav_back">رجوع</string>
     <string name="nav_home">الرئيسية</string>
     <string name="nav_recents">التطبيقات الأخيرة</string>
@@ -97,4 +97,7 @@
     <string name="row_size">حجم الزر العائم: %d</string>
     <string name="row_nav_autohide">إخفاء تلقائي للأزرار العلوية</string>
     <string name="row_nav_autohide_sub">تتلاشى بعد ثوانٍ من عدم الاستخدام، وتظهر عند لمسها. يمكن سحبها إلى أي مكان في الشاشة</string>
+    <string name="row_nav_size">حجم الأزرار العلوية: %d</string>
+    <string name="row_nav_alpha">شفافية الأزرار العلوية: %d%%</string>
+    <string name="clean_no_adb">تعذّر الاتصال بـ ADB. فعّل ADB على المنفذ %d أولاً</string>
 </resources>
