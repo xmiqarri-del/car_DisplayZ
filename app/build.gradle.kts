@@ -11,8 +11,8 @@ android {
         applicationId = "com.xmiqarri.cardisplayz"
         minSdk = 30            // Android 11+
         targetSdk = 33
-        versionCode = 20
-        versionName = "1.1.18"
+        versionCode = 21
+        versionName = "1.1.19"
 
         // The update manifest is a JSON file uploaded to the latest GitHub release of this repo.
         buildConfigField(
