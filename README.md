@@ -11,6 +11,41 @@ Personal Android app for the car head unit (Android 11+).
 - **Starts after boot** once the overlay permission is granted, and again after an update. Android starts an app after boot only if it has been opened since it was installed or last force-stopped, so open the app once after installing it and after any force stop. A force stop cannot be blocked by the app itself.
 - **Background updates**: checks GitHub every 6 hours. When a verified update is downloaded, a notification says it is ready. Nothing is installed until you tap install.
 - Update downloads are HTTPS-only, limited to GitHub hosts, and checked against the SHA-256 hash in `update.json`.
+- **Rear screen** (display 5, the kids' screen): show the main screen there, and open apps on it. See the section below.
+
+## Rear screen (display 5)
+
+The head unit has a second screen in the back (display id 5, the one for the kids). Car_DisplayZ can show the main screen on it and open apps on it. Everything here is controlled from the app grid.
+
+### Buttons on the app grid
+
+A bar above the app list has three buttons:
+
+- **Launch target** (`launch_on_rear` setting): when on, tapping an app opens it on the rear screen and the grid stays open on the main screen. When off, apps open on the main screen as before.
+- **Rear screen** (`rear_display_id` setting): opens a list of the displays other than the main one. Pick the rear screen here. The button shows "no rear screen" until one is chosen, or "missing" if the chosen display is no longer connected.
+- **Mirror**: starts or stops showing the main screen on the rear screen.
+
+### How mirroring works
+
+1. Tap **Mirror**. Android requires the user to allow screen capture, so the app shows the system consent prompt (`MirrorConsentActivity`). Android asks again every time the mirror starts; the app cannot skip it.
+2. After consent, `MirrorService` starts as a foreground service with a persistent notification, and the notification stays while mirroring.
+3. The service creates a `MediaProjection` and a virtual display with `VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR`. That flag copies the main screen into the virtual display.
+4. The service shows a full-screen `Presentation` on the rear display with a `SurfaceView`. The virtual display draws into that surface.
+5. Tap **Mirror** again, or stop the service from the notification, to stop mirroring. The service releases the projection, the virtual display and the presentation.
+
+The mirror is a view only. Touching the mirror on the rear screen does not control the main screen.
+
+### How opening apps on the rear screen works
+
+- `AppRepository.launch(context, package, displayId)` builds the intent with `ActivityOptions.makeBasic().setLaunchDisplayId(displayId)`. The app opens on the chosen display.
+- Apps on the rear screen are real apps on that display, so touch works on them directly. No extra helper or ADB touch injection is involved.
+
+### Limitations
+
+- The consent prompt appears every time mirroring starts.
+- Mirroring stops if the rear display is disconnected, or when the service is stopped by Android.
+- Only one rear display is supported, the one chosen in the Rear screen button.
+- This feature was written without a local Android SDK. It was checked by reading the code and by the CI build, not on a car yet. Test it on the head unit before relying on it.
 
 ## One-time setup
 
@@ -43,4 +78,5 @@ Do not use **Run** to test on the car when the release version is installed. Run
 - `nav/` accessibility service for the bottom buttons
 - `apps/` app list, usage statistics, app grid screen, memory cleanup
 - `update/` update check, download, verification, installer, and background worker
+- `mirror/` rear screen mirroring: `MirrorService`, `MirrorConsentActivity`, `RearDisplay`
 - `MainActivity.kt` settings screen
