@@ -108,4 +108,37 @@
     <string name="row_background_remove">إزالة الخلفية</string>
     <string name="background_saved">تم تعيين الخلفية</string>
     <string name="background_failed">تعذّر فتح الصورة</string>
+
+    <string name="row_app_permissions">صلاحيات Car_DisplayZ</string>
+    <string name="row_app_permissions_sub">كل صلاحية تشغيل أو إيقاف</string>
+    <string name="title_app_permissions">الصلاحيات</string>
+    <string name="perms_hint">يمكن تشغيل الصلاحية من هنا. لإيقافها استخدم إعدادات التطبيق في النظام.</string>
+    <string name="perms_section_permissions">الأذونات</string>
+    <string name="perms_section_other">أخرى</string>
+    <string name="perms_on">مسموحة</string>
+    <string name="perms_off">غير مسموحة</string>
+    <string name="perms_open_system">فتح إعدادات التطبيق في النظام</string>
+    <string name="perms_no_adb">تعذّر السماح: ADB غير متاح على المنفذ %1$d. فعّله مرة واحدة من الكمبيوتر: adb tcpip %1$d</string>
+    <string name="perm_storage_read">قراءة ملفات التخزين</string>
+    <string name="perm_storage_write">كتابة ملفات التخزين</string>
+    <string name="perm_location_fine">الموقع الدقيق</string>
+    <string name="perm_location_coarse">الموقع التقريبي</string>
+    <string name="perm_sensors">المستشعرات بمعدل عالٍ</string>
+    <string name="perm_camera">الكاميرا</string>
+    <string name="perm_microphone">الميكروفون</string>
+    <string name="perm_audio_settings">إعدادات الصوت</string>
+    <string name="perm_bt_connect">البلوتوث: الاتصال</string>
+    <string name="perm_bt_advertise">البلوتوث: البث</string>
+    <string name="perm_bt_scan">البلوتوث: البحث</string>
+    <string name="perm_wifi_state">حالة الواي فاي</string>
+    <string name="perm_network_state">حالة الشبكة</string>
+    <string name="perm_multicast">استقبال الشبكة المتعددة</string>
+    <string name="perm_wake_lock">منع النوم</string>
+    <string name="perm_exact_alarm">المنبهات الدقيقة</string>
+    <string name="perm_battery">تجاهل توفير البطارية</string>
+    <string name="perm_media_projection">خدمة مشاركة الشاشة</string>
+    <string name="perm_media_playback">خدمة تشغيل الوسائط</string>
+    <string name="perm_notifications">الإشعارات</string>
+    <string name="perm_overlay">الظهور فوق التطبيقات الأخرى</string>
+    <string name="perm_install">تثبيت التطبيقات من مصادر غير معروفة</string>
 </resources>
