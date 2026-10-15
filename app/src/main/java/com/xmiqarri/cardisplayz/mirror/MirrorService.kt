@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
@@ -16,7 +17,6 @@ import android.os.IBinder
 import android.view.Display
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.view.VirtualDisplay
 import androidx.core.app.NotificationCompat
 import com.xmiqarri.cardisplayz.R
 
