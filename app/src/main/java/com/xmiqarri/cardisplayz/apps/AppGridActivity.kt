@@ -2,7 +2,10 @@ package com.xmiqarri.cardisplayz.apps
 
 import android.app.AlertDialog
 import android.content.pm.ApplicationInfo
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
+import android.provider.Settings
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
@@ -30,8 +33,8 @@ import kotlinx.coroutines.withContext
 
 /**
  * Opened from the floating button. Shows the apps the driver uses most at the top, a search box,
- * and category chips. Tapping an app launches it and closes this screen. Long-pressing an app
- * the user installed offers to delete it (Android shows its own confirmation).
+ * and category chips. Tapping an app launches it and closes this screen. Long-pressing an app opens
+ * its menu: permissions, app info, force stop, and delete for apps the user installed (through ADB, without the system dialog).
  */
 class AppGridActivity : ComponentActivity() {
 
@@ -42,12 +45,12 @@ class AppGridActivity : ComponentActivity() {
     private val gridAdapter = AppAdapter(
         compact = false,
         onClick = { launchApp(it) },
-        onLongClick = { confirmUninstall(it) },
+        onLongClick = { showAppMenu(it) },
     )
     private val recentAdapter = AppAdapter(
         compact = true,
         onClick = { launchApp(it) },
-        onLongClick = { confirmUninstall(it) },
+        onLongClick = { showAppMenu(it) },
     )
 
     private lateinit var search: EditText
@@ -92,6 +95,44 @@ class AppGridActivity : ComponentActivity() {
 
     private fun launchApp(app: AppItem) {
         if (AppRepository.launch(this, app.packageName)) finish()
+    }
+
+    /** Long-press menu: permissions, app info, force stop, and delete for apps the user installed. */
+    private fun showAppMenu(app: AppItem) {
+        val actions = mutableListOf<Pair<Int, () -> Unit>>(
+            R.string.menu_permissions to { openAppPermissions(app) },
+            R.string.menu_app_info to { openAppInfo(app) },
+            R.string.menu_force_stop to { forceStopApp(app) },
+        )
+        if (!app.isSystem) actions += R.string.menu_delete to { confirmUninstall(app) }
+        AlertDialog.Builder(this)
+            .setTitle(app.label)
+            .setItems(actions.map { getString(it.first) }.toTypedArray()) { _, which -> actions[which].second() }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun openAppPermissions(app: AppItem) {
+        startActivity(
+            Intent(this, AppPermissionsActivity::class.java)
+                .putExtra(AppPermissionsActivity.EXTRA_PACKAGE, app.packageName)
+        )
+    }
+
+    private fun openAppInfo(app: AppItem) {
+        startActivity(
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${app.packageName}"))
+        )
+    }
+
+    /** Stops every process of the app through ADB. */
+    private fun forceStopApp(app: AppItem) {
+        lifecycleScope.launch {
+            val sent = withContext(Dispatchers.IO) { AdbGranter.forceStop(this@AppGridActivity, listOf(app.packageName)) }
+            val message = if (sent == null) getString(R.string.clean_no_adb, AdbGranter.PORT)
+            else getString(R.string.force_stop_done, app.label)
+            Toast.makeText(this@AppGridActivity, message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     /** Asks before deleting. Only apps the user installed can be deleted. */

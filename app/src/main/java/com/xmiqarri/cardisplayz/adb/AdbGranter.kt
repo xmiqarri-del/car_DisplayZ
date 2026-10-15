@@ -101,7 +101,32 @@ object AdbGranter {
      * Runs one grant command (pm grant or appops set allow) through ADB. Returns false when ADB is
      * unreachable or the command fails. Blocking: call it off the main thread. It never revokes.
      */
-    fun grantOne(context: Context, command: String): Boolean {
+    fun grantOne(context: Context, command: String): Boolean = runShell(context, command)
+
+    /** Special-access permissions that are switched with "appops set" instead of pm grant/revoke. */
+    val APP_OPS = mapOf(
+        "android.permission.SYSTEM_ALERT_WINDOW" to "SYSTEM_ALERT_WINDOW",
+        "android.permission.REQUEST_INSTALL_PACKAGES" to "REQUEST_INSTALL_PACKAGES",
+        "android.permission.MANAGE_EXTERNAL_STORAGE" to "MANAGE_EXTERNAL_STORAGE",
+    )
+
+    /**
+     * Turns one permission of [packageName] on or off through ADB: "pm grant" or "pm revoke" for
+     * runtime permissions, "appops set" for the special-access ones in [APP_OPS]. Returns false when
+     * ADB is not reachable or the command fails. Blocking: run it off the main thread.
+     */
+    fun setPermission(context: Context, packageName: String, permission: String, on: Boolean): Boolean {
+        if (!PACKAGE_NAME.matches(packageName) || !PACKAGE_NAME.matches(permission)) return false
+        val appOp = APP_OPS[permission]
+        val command = if (appOp != null) {
+            "appops set $packageName $appOp ${if (on) "allow" else "deny"}"
+        } else {
+            "pm ${if (on) "grant" else "revoke"} $packageName $permission"
+        }
+        return runShell(context, command)
+    }
+
+    private fun runShell(context: Context, command: String): Boolean {
         val dadb = try {
             Dadb.create(HOST, PORT, loadOrCreateKey(context))
         } catch (e: Exception) {

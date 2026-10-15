@@ -13,7 +13,7 @@
     <string name="install_failed">لم يتم العثور على مثبّت التطبيقات في هذا الجهاز.</string>
 
     <string name="apps_title">التطبيقات</string>
-    <string name="hint_long_press">اضغط مطولاً على أي تطبيق لحذفه</string>
+    <string name="hint_long_press">اضغط مطولاً على أي تطبيق لعرض خياراته</string>
     <string name="search_hint">ابحث عن تطبيق</string>
     <string name="section_recent">الأكثر استخداماً</string>
     <string name="filter_all">الكل</string>
@@ -141,4 +141,13 @@
     <string name="perm_notifications">الإشعارات</string>
     <string name="perm_overlay">الظهور فوق التطبيقات الأخرى</string>
     <string name="perm_install">تثبيت التطبيقات من مصادر غير معروفة</string>
+
+    <string name="menu_permissions">الأذونات</string>
+    <string name="menu_app_info">معلومات التطبيق</string>
+    <string name="menu_force_stop">إيقاف إجباري</string>
+    <string name="menu_delete">حذف التطبيق</string>
+    <string name="force_stop_done">أُوقف %1$s</string>
+    <string name="app_perms_hint">تُشغَّل الصلاحيات وتُوقف عبر ADB على هذا الجهاز.</string>
+    <string name="perms_none">لا يطلب هذا التطبيق أي صلاحيات.</string>
+    <string name="perms_granted_auto">ممنوحة تلقائياً عند التثبيت</string>
 </resources>

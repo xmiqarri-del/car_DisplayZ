@@ -13,7 +13,7 @@
     <string name="install_failed">No package installer was found on this device.</string>
 
     <string name="apps_title">Apps</string>
-    <string name="hint_long_press">Press and hold an app to delete it</string>
+    <string name="hint_long_press">Press and hold an app for options</string>
     <string name="search_hint">Search apps</string>
     <string name="section_recent">Most used</string>
     <string name="filter_all">All</string>
@@ -141,4 +141,13 @@
     <string name="perm_notifications">Notifications</string>
     <string name="perm_overlay">Display over other apps</string>
     <string name="perm_install">Install unknown apps</string>
+
+    <string name="menu_permissions">Permissions</string>
+    <string name="menu_app_info">App info</string>
+    <string name="menu_force_stop">Force stop</string>
+    <string name="menu_delete">Delete app</string>
+    <string name="force_stop_done">Stopped %1$s</string>
+    <string name="app_perms_hint">Permissions are turned on and off through ADB on this device.</string>
+    <string name="perms_none">This app requests no permissions.</string>
+    <string name="perms_granted_auto">Granted at install</string>
 </resources>
