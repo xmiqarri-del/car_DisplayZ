@@ -16,9 +16,14 @@ import android.os.Build
 import android.os.IBinder
 import android.view.Display
 import android.view.SurfaceHolder
+import android.view.MotionEvent
 import android.view.SurfaceView
+import android.view.View
 import androidx.core.app.NotificationCompat
 import com.xmiqarri.cardisplayz.R
+import com.xmiqarri.cardisplayz.adb.AdbGranter
+import kotlin.math.hypot
+import kotlin.math.roundToInt
 
 /**
  * Shows what the main screen (display 0) shows on the rear screen.
@@ -51,6 +56,7 @@ class MirrorService : Service() {
     private var projection: MediaProjection? = null
     private var virtualDisplay: VirtualDisplay? = null
     private var presentation: Presentation? = null
+    private var touchInjector: TouchInjector? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -97,15 +103,17 @@ class MirrorService : Service() {
 
     /** Full-screen window on the rear display; the mirror starts once its surface exists. */
     private fun showOn(target: Display) {
+        val main = getSystemService(DisplayManager::class.java).getDisplay(Display.DEFAULT_DISPLAY)
+        val mainMode = main.mode
         val window = Presentation(this, target)
         val view = SurfaceView(window.context)
         view.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
-                val mode = target.mode
+                // Same size as the main screen, so a touch position on the rear screen maps to the same place on the main screen.
                 virtualDisplay = projection?.createVirtualDisplay(
                     "CarDisplayZMirror",
-                    mode.physicalWidth,
-                    mode.physicalHeight,
+                    mainMode.physicalWidth,
+                    mainMode.physicalHeight,
                     resources.displayMetrics.densityDpi,
                     DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                     holder.surface,
@@ -121,13 +129,57 @@ class MirrorService : Service() {
                 virtualDisplay = null
             }
         })
+        val injector = TouchInjector { AdbGranter.connect(this@MirrorService) }
+        touchInjector = injector
+        view.setOnTouchListener(TouchForwarder(injector, mainMode.physicalWidth, mainMode.physicalHeight))
         window.setContentView(view)
         window.show()
         presentation = window
     }
 
+    /** Turns a tap or swipe on the rear screen into a tap or swipe on the main screen. */
+    private inner class TouchForwarder(
+        private val injector: TouchInjector,
+        private val mainWidth: Int,
+        private val mainHeight: Int,
+    ) : View.OnTouchListener {
+
+        private var downX = 0f
+        private var downY = 0f
+        private var downTime = 0L
+        private val slop = resources.displayMetrics.density * 24
+
+        override fun onTouch(view: View, event: MotionEvent): Boolean {
+            if (view.width <= 0 || view.height <= 0) return true
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    downX = event.x
+                    downY = event.y
+                    downTime = event.eventTime
+                }
+                MotionEvent.ACTION_UP -> {
+                    val x2 = toMainX(view, event.x)
+                    val y2 = toMainY(view, event.y)
+                    if (hypot((event.x - downX).toDouble(), (event.y - downY).toDouble()) < slop) {
+                        injector.tap(x2, y2)
+                    } else {
+                        val duration = (event.eventTime - downTime).coerceIn(100L, 2000L).toInt()
+                        injector.swipe(toMainX(view, downX), toMainY(view, downY), x2, y2, duration)
+                    }
+                }
+            }
+            return true
+        }
+
+        private fun toMainX(view: View, x: Float) = (x * mainWidth / view.width).roundToInt().coerceIn(0, mainWidth - 1)
+
+        private fun toMainY(view: View, y: Float) = (y * mainHeight / view.height).roundToInt().coerceIn(0, mainHeight - 1)
+    }
+
     override fun onDestroy() {
         running = false
+        touchInjector?.close()
+        touchInjector = null
         virtualDisplay?.release()
         virtualDisplay = null
         presentation?.dismiss()

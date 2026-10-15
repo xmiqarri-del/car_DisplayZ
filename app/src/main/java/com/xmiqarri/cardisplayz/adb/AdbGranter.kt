@@ -126,6 +126,9 @@ object AdbGranter {
         return runShell(context, command)
     }
 
+    /** Opens this app's ADB connection for commands that run for a while (the caller closes it). */
+    fun connect(context: Context): Dadb = Dadb.create(HOST, PORT, loadOrCreateKey(context))
+
     private fun runShell(context: Context, command: String): Boolean {
         val dadb = try {
             Dadb.create(HOST, PORT, loadOrCreateKey(context))
