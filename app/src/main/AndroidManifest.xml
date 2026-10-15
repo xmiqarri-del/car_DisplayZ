@@ -76,6 +76,11 @@
         </activity>
 
         <activity
+            android:name=".permissions.PermissionsActivity"
+            android:exported="false"
+            android:launchMode="singleTask" />
+
+        <activity
             android:name=".apps.AppGridActivity"
             android:exported="false"
             android:launchMode="singleTask" />

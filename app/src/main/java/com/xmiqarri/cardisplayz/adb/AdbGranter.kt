@@ -97,6 +97,26 @@ object AdbGranter {
         }
     }
 
+    /**
+     * Runs one grant command (pm grant or appops set allow) through ADB. Returns false when ADB is
+     * unreachable or the command fails. Blocking: call it off the main thread. It never revokes.
+     */
+    fun grantOne(context: Context, command: String): Boolean {
+        val dadb = try {
+            Dadb.create(HOST, PORT, loadOrCreateKey(context))
+        } catch (e: Exception) {
+            return false
+        }
+        return try {
+            val response = dadb.shell(command)
+            response.exitCode == 0 && !response.allOutput.contains("Exception")
+        } catch (e: Exception) {
+            false
+        } finally {
+            runCatching { dadb.close() }
+        }
+    }
+
     private fun run(dadb: Dadb, labelRes: Int, command: String): Step = try {
         val response = dadb.shell(command)
         val output = response.allOutput.trim()

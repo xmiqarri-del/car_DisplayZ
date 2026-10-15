@@ -22,6 +22,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import com.xmiqarri.cardisplayz.apps.AppGridActivity
 import com.xmiqarri.cardisplayz.apps.MemoryCleaner
+import com.xmiqarri.cardisplayz.permissions.PermissionsActivity
 import com.xmiqarri.cardisplayz.nav.NavBarService
 import com.xmiqarri.cardisplayz.overlay.OverlayService
 import com.xmiqarri.cardisplayz.update.ApkDownloader
@@ -151,6 +152,13 @@ class MainActivity : ComponentActivity() {
                 val stopped = MemoryCleaner.clean(this)
                 Toast.makeText(this, getString(R.string.clean_done, stopped), Toast.LENGTH_SHORT).show()
             },
+        )
+
+        addRow(
+            title = getString(R.string.row_app_permissions),
+            subtitle = getString(R.string.row_app_permissions_sub),
+            trailing = null,
+            onClick = { startActivity(Intent(this, PermissionsActivity::class.java)) },
         )
 
         addRow(

@@ -93,4 +93,37 @@
     <string name="grant_step_accessibility">Accessibility service (top buttons)</string>
     <string name="grant_step_runtime">Runtime permissions (storage, location, camera, audio, Bluetooth, Wi-Fi)</string>
     <string name="grant_step_appops">Extra app permissions (full-screen intent, project media)</string>
+
+    <string name="row_app_permissions">Car_DisplayZ permissions</string>
+    <string name="row_app_permissions_sub">Each permission on or off</string>
+    <string name="title_app_permissions">Permissions</string>
+    <string name="perms_hint">A permission can be turned on here. To turn one off, use the system app settings.</string>
+    <string name="perms_section_permissions">Permissions</string>
+    <string name="perms_section_other">Other</string>
+    <string name="perms_on">Allowed</string>
+    <string name="perms_off">Not allowed</string>
+    <string name="perms_open_system">Open system app settings</string>
+    <string name="perms_no_adb">Could not allow it: ADB is not reachable on port %1$d. Turn it on once from a computer: adb tcpip %1$d</string>
+    <string name="perm_storage_read">Read storage files</string>
+    <string name="perm_storage_write">Write storage files</string>
+    <string name="perm_location_fine">Precise location</string>
+    <string name="perm_location_coarse">Approximate location</string>
+    <string name="perm_sensors">High-rate sensors</string>
+    <string name="perm_camera">Camera</string>
+    <string name="perm_microphone">Microphone</string>
+    <string name="perm_audio_settings">Audio settings</string>
+    <string name="perm_bt_connect">Bluetooth connect</string>
+    <string name="perm_bt_advertise">Bluetooth advertise</string>
+    <string name="perm_bt_scan">Bluetooth scan</string>
+    <string name="perm_wifi_state">Wi-Fi state</string>
+    <string name="perm_network_state">Network state</string>
+    <string name="perm_multicast">Wi-Fi multicast</string>
+    <string name="perm_wake_lock">Keep device awake</string>
+    <string name="perm_exact_alarm">Exact alarms</string>
+    <string name="perm_battery">Ignore battery optimization</string>
+    <string name="perm_media_projection">Screen sharing service</string>
+    <string name="perm_media_playback">Media playback service</string>
+    <string name="perm_notifications">Notifications</string>
+    <string name="perm_overlay">Display over other apps</string>
+    <string name="perm_install">Install unknown apps</string>
 </resources>
