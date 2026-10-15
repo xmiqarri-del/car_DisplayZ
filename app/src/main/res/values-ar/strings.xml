@@ -150,4 +150,15 @@
     <string name="app_perms_hint">تُشغَّل الصلاحيات وتُوقف عبر ADB على هذا الجهاز.</string>
     <string name="perms_none">لا يطلب هذا التطبيق أي صلاحيات.</string>
     <string name="perms_granted_auto">ممنوحة تلقائياً عند التثبيت</string>
+
+    <string name="rear_none">الشاشة الخلفية: غير محددة</string>
+    <string name="rear_label">الشاشة الخلفية: %1$s</string>
+    <string name="rear_choose_title">اختر الشاشة الخلفية</string>
+    <string name="rear_missing">الشاشة الخلفية غير متصلة</string>
+    <string name="rear_launch_on">فتح التطبيقات على الخلفية</string>
+    <string name="rear_launch_off">فتح التطبيقات هنا</string>
+    <string name="mirror_start">عرض الشاشة الرئيسية على الخلفية</string>
+    <string name="mirror_stop">إيقاف العرض على الخلفية</string>
+    <string name="mirror_channel">عرض الشاشة</string>
+    <string name="mirror_notification">تُعرض الشاشة الرئيسية على الشاشة الخلفية</string>
 </resources>

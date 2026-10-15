@@ -14,6 +14,20 @@ object AppSettings {
         prefs(context).edit().putBoolean("floating_enabled", enabled).apply()
     }
 
+    /** Display id of the rear screen, or -1 when none is chosen. */
+    fun rearDisplayId(context: Context): Int = prefs(context).getInt("rear_display_id", -1)
+
+    fun setRearDisplayId(context: Context, id: Int) {
+        prefs(context).edit().putInt("rear_display_id", id).apply()
+    }
+
+    /** When on, tapping an app opens it on the rear screen instead of this one. */
+    fun launchOnRear(context: Context): Boolean = prefs(context).getBoolean("launch_on_rear", false)
+
+    fun setLaunchOnRear(context: Context, on: Boolean) {
+        prefs(context).edit().putBoolean("launch_on_rear", on).apply()
+    }
+
     fun startOnBoot(context: Context): Boolean = prefs(context).getBoolean("start_on_boot", true)
 
     fun setStartOnBoot(context: Context, enabled: Boolean) {

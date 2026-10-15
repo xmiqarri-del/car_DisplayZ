@@ -1,10 +1,12 @@
 package com.xmiqarri.cardisplayz.apps
 
+import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
+import android.view.Display
 import org.json.JSONObject
 
 /** One launchable app, with its usage statistics. [isSystem] apps come with the car and cannot be deleted. */
@@ -99,11 +101,16 @@ object AppRepository {
         return app.launches + recency
     }
 
-    fun launch(context: Context, packageName: String): Boolean {
+    fun launch(context: Context, packageName: String, displayId: Int = Display.DEFAULT_DISPLAY): Boolean {
         val intent = context.packageManager.getLaunchIntentForPackage(packageName) ?: return false
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val options = if (displayId == Display.DEFAULT_DISPLAY) {
+            null
+        } else {
+            ActivityOptions.makeBasic().setLaunchDisplayId(displayId).toBundle()
+        }
         return try {
-            context.startActivity(intent)
+            context.startActivity(intent, options)
             AppUsage.record(context, packageName)
             true
         } catch (e: ActivityNotFoundException) {

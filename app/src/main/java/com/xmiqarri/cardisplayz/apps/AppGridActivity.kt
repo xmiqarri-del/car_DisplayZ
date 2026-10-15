@@ -20,8 +20,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xmiqarri.cardisplayz.AppBackground
+import com.xmiqarri.cardisplayz.AppSettings
 import com.xmiqarri.cardisplayz.MATCH
 import com.xmiqarri.cardisplayz.adb.AdbGranter
+import com.xmiqarri.cardisplayz.mirror.MirrorConsentActivity
+import com.xmiqarri.cardisplayz.mirror.MirrorService
+import com.xmiqarri.cardisplayz.mirror.RearDisplay
 import com.xmiqarri.cardisplayz.R
 import com.xmiqarri.cardisplayz.Theme
 import com.xmiqarri.cardisplayz.WRAP
@@ -66,6 +70,7 @@ class AppGridActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         reload()
+        refreshRearBar()
     }
 
     private fun reload() {
@@ -94,7 +99,94 @@ class AppGridActivity : ComponentActivity() {
     }
 
     private fun launchApp(app: AppItem) {
+        if (AppSettings.launchOnRear(this)) {
+            // Stays on this screen so the driver can keep choosing apps for the rear screen.
+            val rear = RearDisplay.selected(this)
+            if (rear == null) {
+                Toast.makeText(this, R.string.rear_missing, Toast.LENGTH_SHORT).show()
+            } else if (!AppRepository.launch(this, app.packageName, rear.displayId)) {
+                Toast.makeText(this, R.string.rear_missing, Toast.LENGTH_SHORT).show()
+            }
+            return
+        }
         if (AppRepository.launch(this, app.packageName)) finish()
+    }
+
+    private lateinit var launchButton: TextView
+    private lateinit var rearButton: TextView
+    private lateinit var mirrorButton: TextView
+
+    /** Row of three buttons: where apps open, which screen is the rear one, and showing the main screen there. */
+    private fun buildRearBar(): View {
+        launchButton = pill()
+        rearButton = pill()
+        mirrorButton = pill()
+        launchButton.setOnClickListener { toggleLaunchTarget() }
+        rearButton.setOnClickListener { chooseRearDisplay() }
+        mirrorButton.setOnClickListener { toggleMirror() }
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) }
+            addView(launchButton)
+            addView(rearButton)
+            addView(mirrorButton)
+        }
+    }
+
+    private fun pill(): TextView = TextView(this).apply {
+        textSize = 14f
+        setPadding(dp(14), dp(9), dp(14), dp(9))
+        layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { rightMargin = dp(8) }
+    }
+
+    private fun refreshRearBar() {
+        val rear = RearDisplay.selected(this)
+        launchButton.text = getString(if (AppSettings.launchOnRear(this)) R.string.rear_launch_on else R.string.rear_launch_off)
+        rearButton.text = if (rear == null) getString(R.string.rear_none) else getString(R.string.rear_label, rear.name)
+        mirrorButton.text = getString(if (MirrorService.running) R.string.mirror_stop else R.string.mirror_start)
+        listOf(launchButton, rearButton, mirrorButton).forEach {
+            it.background = roundedBackground(Theme.INPUT, dp(20).toFloat())
+            it.setTextColor(Theme.TEXT_ON_SURFACE_CHIP)
+        }
+    }
+
+    private fun toggleLaunchTarget() {
+        AppSettings.setLaunchOnRear(this, !AppSettings.launchOnRear(this))
+        refreshRearBar()
+    }
+
+    private fun chooseRearDisplay() {
+        val displays = RearDisplay.candidates(this)
+        if (displays.isEmpty()) {
+            Toast.makeText(this, R.string.rear_missing, Toast.LENGTH_SHORT).show()
+            return
+        }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.rear_choose_title)
+            .setItems(displays.map { it.name }.toTypedArray()) { _, which ->
+                AppSettings.setRearDisplayId(this, displays[which].displayId)
+                refreshRearBar()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    /** Starts or stops showing the main screen on the rear screen. Starting asks for screen-capture consent. */
+    private fun toggleMirror() {
+        if (MirrorService.running) {
+            MirrorService.stop(this)
+            refreshRearBar()
+            return
+        }
+        val rear = RearDisplay.selected(this)
+        if (rear == null) {
+            Toast.makeText(this, R.string.rear_missing, Toast.LENGTH_SHORT).show()
+            return
+        }
+        startActivity(
+            Intent(this, MirrorConsentActivity::class.java)
+                .putExtra(MirrorService.EXTRA_DISPLAY_ID, rear.displayId)
+        )
     }
 
     /** Long-press menu: permissions, app info, force stop, and delete for apps the user installed. */
@@ -226,6 +318,7 @@ class AppGridActivity : ComponentActivity() {
         }
         chipScroll.addView(chipRow)
         root.addView(chipScroll)
+        root.addView(buildRearBar())
 
         recentLabel = TextView(this).apply {
             text = getString(R.string.section_recent)

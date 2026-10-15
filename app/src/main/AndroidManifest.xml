@@ -80,6 +80,18 @@
             android:exported="false"
             android:launchMode="singleTask" />
 
+        <!-- Shows the main screen on the rear screen (screen capture, needs the user's consent each time). -->
+        <service
+            android:name=".mirror.MirrorService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
+
+        <activity
+            android:name=".mirror.MirrorConsentActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <activity
             android:name=".apps.AppPermissionsActivity"
             android:exported="false"

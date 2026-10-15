@@ -150,4 +150,15 @@
     <string name="app_perms_hint">Permissions are turned on and off through ADB on this device.</string>
     <string name="perms_none">This app requests no permissions.</string>
     <string name="perms_granted_auto">Granted at install</string>
+
+    <string name="rear_none">Rear screen: not set</string>
+    <string name="rear_label">Rear screen: %1$s</string>
+    <string name="rear_choose_title">Choose the rear screen</string>
+    <string name="rear_missing">The rear screen is not connected</string>
+    <string name="rear_launch_on">Open apps on rear</string>
+    <string name="rear_launch_off">Open apps here</string>
+    <string name="mirror_start">Show main screen on rear</string>
+    <string name="mirror_stop">Stop showing on rear</string>
+    <string name="mirror_channel">Screen mirror</string>
+    <string name="mirror_notification">Showing the main screen on the rear screen</string>
 </resources>
