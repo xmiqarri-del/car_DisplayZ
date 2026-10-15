@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xmiqarri.cardisplayz.MATCH
 import com.xmiqarri.cardisplayz.adb.AdbGranter
 import com.xmiqarri.cardisplayz.R
+import com.xmiqarri.cardisplayz.Theme
 import com.xmiqarri.cardisplayz.WRAP
 import com.xmiqarri.cardisplayz.dp
 import com.xmiqarri.cardisplayz.roundedBackground
@@ -121,10 +122,10 @@ class AppGridActivity : ComponentActivity() {
 
     private fun styleChip(chip: TextView, selected: Boolean) {
         chip.background = roundedBackground(
-            if (selected) 0xFF2BB3C0.toInt() else 0xFF152238.toInt(),
+            if (selected) Theme.ACCENT else Theme.INPUT,
             dp(20).toFloat()
         )
-        chip.setTextColor(if (selected) 0xFF03131A.toInt() else 0xFFB8C7DA.toInt())
+        chip.setTextColor(if (selected) Theme.ON_ACCENT else Theme.TEXT_ON_SURFACE_CHIP)
     }
 
     private fun buildUi(): View {
@@ -132,7 +133,7 @@ class AppGridActivity : ComponentActivity() {
             orientation = LinearLayout.VERTICAL
             background = GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
-                intArrayOf(0xFF0E1A2B.toInt(), 0xFF05080F.toInt())
+                intArrayOf(Theme.BACKGROUND_TOP, Theme.BACKGROUND_BOTTOM)
             )
             setPadding(dp(24), dp(18), dp(24), dp(14))
         }
@@ -140,22 +141,22 @@ class AppGridActivity : ComponentActivity() {
         root.addView(TextView(this).apply {
             text = getString(R.string.apps_title)
             textSize = 24f
-            setTextColor(0xFFFFFFFF.toInt())
+            setTextColor(Theme.TEXT_PRIMARY)
             setTypeface(typeface, android.graphics.Typeface.BOLD)
         })
         root.addView(TextView(this).apply {
             text = getString(R.string.hint_long_press)
             textSize = 13f
-            setTextColor(0xFF8FA6C2.toInt())
+            setTextColor(Theme.TEXT_SECONDARY)
             layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(2) }
         })
 
         search = EditText(this).apply {
             hint = getString(R.string.search_hint)
-            setHintTextColor(0x66FFFFFF)
-            setTextColor(0xFFFFFFFF.toInt())
+            setHintTextColor(Theme.HINT)
+            setTextColor(Theme.TEXT_PRIMARY)
             setSingleLine(true)
-            background = roundedBackground(0xFF152238.toInt(), dp(16).toFloat())
+            background = roundedBackground(Theme.INPUT, dp(16).toFloat())
             setPadding(dp(16), dp(12), dp(16), dp(12))
             layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) }
             doAfterTextChanged { applyFilters() }
@@ -187,7 +188,8 @@ class AppGridActivity : ComponentActivity() {
         recentLabel = TextView(this).apply {
             text = getString(R.string.section_recent)
             textSize = 14f
-            setTextColor(0xFF8FA6C2.toInt())
+            setTextColor(Theme.TEXT_SECONDARY)
+            letterSpacing = 0.05f
             layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply {
                 topMargin = dp(16)
                 bottomMargin = dp(2)

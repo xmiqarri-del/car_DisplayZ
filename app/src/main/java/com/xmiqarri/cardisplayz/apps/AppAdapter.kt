@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.xmiqarri.cardisplayz.MATCH
+import com.xmiqarri.cardisplayz.Theme
 import com.xmiqarri.cardisplayz.WRAP
 import com.xmiqarri.cardisplayz.dp
 import com.xmiqarri.cardisplayz.roundedBackground
@@ -45,7 +46,7 @@ class AppAdapter(
             layoutParams = LinearLayout.LayoutParams(ctx.dp(60), ctx.dp(60))
         }
         val label = TextView(ctx).apply {
-            setTextColor(0xFFE6EEF8.toInt())
+            setTextColor(Theme.TEXT_PRIMARY)
             textSize = 15f
             gravity = Gravity.CENTER
             maxLines = 1
@@ -53,12 +54,12 @@ class AppAdapter(
             layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = ctx.dp(10) }
         }
 
-        val card = roundedBackground(0xFF121E33.toInt(), ctx.dp(22).toFloat(), 0x332BB3C0, ctx.dp(1))
+        val card = roundedBackground(Theme.SURFACE, ctx.dp(20).toFloat(), Theme.SURFACE_BORDER, ctx.dp(1))
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
             setPadding(ctx.dp(8), ctx.dp(16), ctx.dp(8), ctx.dp(14))
-            background = RippleDrawable(ColorStateList.valueOf(0x338EE8FF), card, null)
+            background = RippleDrawable(ColorStateList.valueOf(Theme.SURFACE_PRESSED), card, null)
             val width = if (compact) ctx.dp(116) else MATCH
             layoutParams = RecyclerView.LayoutParams(width, WRAP).apply {
                 setMargins(ctx.dp(6), ctx.dp(6), ctx.dp(6), ctx.dp(6))

@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
             setPadding(dp(20), dp(16), dp(20), dp(24))
         }
         setContentView(ScrollView(this).apply {
-            setBackgroundColor(0xFF0A1220.toInt())
+            setBackgroundColor(Theme.BACKGROUND_SOLID)
             addView(content)
         })
 
@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
             text = getString(R.string.settings_title)
             textSize = 28f
             setTypeface(typeface, Typeface.BOLD)
-            setTextColor(WHITE)
+            setTextColor(Theme.TEXT_PRIMARY)
             setPadding(dp(4), dp(8), 0, dp(4))
         })
 
@@ -278,7 +278,8 @@ class MainActivity : ComponentActivity() {
             text = title
             textSize = 13f
             setTypeface(typeface, Typeface.BOLD)
-            setTextColor(0xFF2BB3C0.toInt())
+            setTextColor(Theme.ACCENT)
+            letterSpacing = 0.06f
             setPadding(dp(6), dp(24), 0, dp(2))
         })
     }
@@ -294,7 +295,7 @@ class MainActivity : ComponentActivity() {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(20), dp(16), dp(16), dp(16))
-            background = roundedBackground(0xFF121E33.toInt(), dp(16).toFloat())
+            background = roundedBackground(Theme.SURFACE, dp(16).toFloat())
             layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) }
             if (onClick != null) {
                 isClickable = true
@@ -310,13 +311,13 @@ class MainActivity : ComponentActivity() {
         texts.addView(TextView(this).apply {
             text = title
             textSize = 17f
-            setTextColor(WHITE)
+            setTextColor(Theme.TEXT_PRIMARY)
         })
         if (subtitle != null) {
             texts.addView(TextView(this).apply {
                 text = subtitle
                 textSize = 13f
-                setTextColor(0xFF8FA6C2.toInt())
+                setTextColor(Theme.TEXT_SECONDARY)
                 setPadding(0, dp(4), 0, 0)
             })
         }
@@ -333,13 +334,13 @@ class MainActivity : ComponentActivity() {
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(20), dp(16), dp(20), dp(12))
-            background = roundedBackground(0xFF121E33.toInt(), dp(16).toFloat())
+            background = roundedBackground(Theme.SURFACE, dp(16).toFloat())
             layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) }
         }
         val title = TextView(this).apply {
             text = label(value)
             textSize = 17f
-            setTextColor(WHITE)
+            setTextColor(Theme.TEXT_PRIMARY)
         }
         val slider = SeekBar(this).apply {
             this.max = max - min
@@ -473,5 +474,4 @@ class MainActivity : ComponentActivity() {
         return info.packageName == packageName && info.longVersionCode > BuildConfig.VERSION_CODE
     }
 
-    private val WHITE: Int = 0xFFFFFFFF.toInt()
 }
