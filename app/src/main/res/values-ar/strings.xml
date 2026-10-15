@@ -161,4 +161,24 @@
     <string name="mirror_stop">إيقاف العرض على الخلفية</string>
     <string name="mirror_channel">عرض الشاشة</string>
     <string name="mirror_notification">تُعرض الشاشة الرئيسية على الشاشة الخلفية</string>
+    <string name="section_locks">القفل</string>
+    <string name="row_delayed_lock">زر القفل المؤجل</string>
+    <string name="row_delayed_lock_sub">يضيف زر القفل المؤجل إلى شاشة التطبيقات. اختر 15 أو 30 أو 60 ثانية، والعد التنازلي يُقال بصوت عالٍ ثم تُقفل الأبواب.</string>
+    <string name="row_fob_lock">القفل من المفتاح والسيارة تعمل</string>
+    <string name="row_fob_lock_sub">تجريبي. عندما ترفض السيارة القفل من المفتاح وهي تعمل (زمور وعشر ومضات)، وهي في وضع P وثابتة وجميع الأبواب مغلقة، تُقفل الأبواب. جرّبها على السيارة أولاً.</string>
+    <string name="delayed_lock_button">قفل مؤجل</string>
+    <string name="delayed_lock_duration_title">قفل الأبواب بعد</string>
+    <string name="delayed_lock_duration_hint">تُقفل الأبواب بعد المدة التي تختارها، مع عد تنازلي صوتي.</string>
+    <string name="delayed_lock_15s">15 ثانية</string>
+    <string name="delayed_lock_30s">30 ثانية</string>
+    <string name="delayed_lock_60s">60 ثانية</string>
+    <string name="delayed_lock_dialog_title">جاري قفل الأبواب</string>
+    <string name="delayed_lock_dialog_subtitle">اضغط إلغاء للإيقاف.</string>
+    <string name="delayed_lock_done_title">تم قفل الأبواب</string>
+    <string name="delayed_lock_done_subtitle">تُطوى المرايا وتُطفأ الشاشات.</string>
+    <string name="delayed_lock_speak_start">سيتم قفل الأبواب بعد %d ثانية</string>
+    <string name="delayed_lock_speak_done">تم قفل الأبواب</string>
+    <string name="delayed_lock_speak_cancelled">تم إلغاء القفل</string>
+    <string name="delayed_lock_cancelled_toast">تم إلغاء القفل</string>
+    <string name="vehicle_unavailable_toast">أدوات التحكم في السيارة غير متوفرة على هذا الجهاز.</string>
 </resources>

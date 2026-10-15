@@ -87,6 +87,20 @@ object AppSettings {
         prefs(context).edit().putInt("nav_x", x).putInt("nav_y", y).apply()
     }
 
+    /** Shows the Delayed lock button in the app grid. */
+    fun delayedLockEnabled(context: Context): Boolean = prefs(context).getBoolean("delayed_lock_enabled", false)
+
+    fun setDelayedLockEnabled(context: Context, enabled: Boolean) {
+        prefs(context).edit().putBoolean("delayed_lock_enabled", enabled).apply()
+    }
+
+    /** Locks the doors when the car refuses a lock from the key while it is on. Off by default. */
+    fun fobLockAssist(context: Context): Boolean = prefs(context).getBoolean("fob_lock_assist", false)
+
+    fun setFobLockAssist(context: Context, enabled: Boolean) {
+        prefs(context).edit().putBoolean("fob_lock_assist", enabled).apply()
+    }
+
     fun autoUpdate(context: Context): Boolean = prefs(context).getBoolean("auto_update", true)
 
     fun setAutoUpdate(context: Context, enabled: Boolean) {

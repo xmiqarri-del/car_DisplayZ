@@ -26,6 +26,7 @@ import com.xmiqarri.cardisplayz.apps.AppGridActivity
 import com.xmiqarri.cardisplayz.apps.MemoryCleaner
 import com.xmiqarri.cardisplayz.permissions.PermissionsActivity
 import com.xmiqarri.cardisplayz.nav.NavBarService
+import com.xmiqarri.cardisplayz.lock.FobLockAssist
 import com.xmiqarri.cardisplayz.overlay.OverlayService
 import com.xmiqarri.cardisplayz.update.ApkDownloader
 import com.xmiqarri.cardisplayz.update.ApkInstaller
@@ -193,6 +194,27 @@ class MainActivity : ComponentActivity() {
             subtitle = getString(if (NavBarService.instance != null) R.string.nav_on else R.string.nav_off),
             trailing = null,
             onClick = { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) },
+        )
+
+        section(getString(R.string.section_locks))
+        addRow(
+            title = getString(R.string.row_delayed_lock),
+            subtitle = getString(R.string.row_delayed_lock_sub),
+            trailing = toggle(AppSettings.delayedLockEnabled(this)) { on ->
+                AppSettings.setDelayedLockEnabled(this, on)
+                render()
+            },
+            onClick = null,
+        )
+        addRow(
+            title = getString(R.string.row_fob_lock),
+            subtitle = getString(R.string.row_fob_lock_sub),
+            trailing = toggle(AppSettings.fobLockAssist(this)) { on ->
+                AppSettings.setFobLockAssist(this, on)
+                FobLockAssist.sync(this)
+                render()
+            },
+            onClick = null,
         )
 
         section(getString(R.string.section_appearance))
