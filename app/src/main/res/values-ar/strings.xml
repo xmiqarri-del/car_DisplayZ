@@ -91,4 +91,6 @@
     <string name="grant_step_notifications">الإشعارات</string>
     <string name="grant_step_install">تثبيت التحديثات</string>
     <string name="grant_step_accessibility">خدمة إمكانية الوصول (الأزرار العلوية)</string>
+    <string name="grant_step_runtime">صلاحيات وقت التشغيل (التخزين والموقع والكاميرا والصوت والبلوتوث والواي فاي)</string>
+    <string name="grant_step_appops">صلاحيات إضافية (الشاشة الكاملة، ومحتوى الوسائط)</string>
 </resources>

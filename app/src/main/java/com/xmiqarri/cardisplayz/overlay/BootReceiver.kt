@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.xmiqarri.cardisplayz.AppSettings
+import com.xmiqarri.cardisplayz.adb.AdbGranter
 import com.xmiqarri.cardisplayz.update.UpdateWorker
 
 /**
@@ -23,6 +24,9 @@ class BootReceiver : BroadcastReceiver() {
             else -> return
         }
         UpdateWorker.schedule(context)
+        // Android can revoke grants after a reboot or an update. Restore only what is missing, off the receiver thread.
+        val app = context.applicationContext
+        Thread { runCatching { AdbGranter.restoreIfMissing(app) } }.start()
     }
 
     private companion object {

@@ -91,4 +91,6 @@
     <string name="grant_step_notifications">Notifications</string>
     <string name="grant_step_install">Install updates</string>
     <string name="grant_step_accessibility">Accessibility service (top buttons)</string>
+    <string name="grant_step_runtime">Runtime permissions (storage, location, camera, audio, Bluetooth, Wi-Fi)</string>
+    <string name="grant_step_appops">Extra app permissions (full-screen intent, project media)</string>
 </resources>

@@ -47,6 +47,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Restore any grant that was lost since the last start, in the background and only when something is missing.
+        lifecycleScope.launch(Dispatchers.IO) { runCatching { AdbGranter.restoreIfMissing(applicationContext) } }
         content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(20), dp(16), dp(20), dp(24))

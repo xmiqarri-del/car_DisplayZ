@@ -1,6 +1,8 @@
 package com.xmiqarri.cardisplayz.adb
 
 import android.content.Context
+import android.content.pm.PackageManager
+import android.provider.Settings
 import com.xmiqarri.cardisplayz.R
 import dadb.AdbKeyPair
 import dadb.Dadb
@@ -23,6 +25,43 @@ object AdbGranter {
 
     /** Component names only. Anything else in the setting is left untouched and reported. */
     private val COMPONENT_LIST = Regex("[A-Za-z0-9_.$/:]+")
+
+    /** Runtime permissions granted through pm grant. Each one is declared in AndroidManifest.xml. */
+    val RUNTIME_PERMISSIONS = listOf(
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.HIGH_SAMPLING_RATE_SENSORS",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_ADVERTISE",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.CHANGE_WIFI_MULTICAST_STATE",
+        "android.permission.WAKE_LOCK",
+        "android.permission.USE_EXACT_ALARM",
+        "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+    )
+
+    /**
+     * True when something this app should hold is missing: a runtime permission, the overlay,
+     * or the install-packages access. Cheap and safe to call on any thread.
+     */
+    fun isMissing(context: Context): Boolean {
+        val pm = context.packageManager
+        val pkg = context.packageName
+        val runtimeMissing = RUNTIME_PERMISSIONS.any { pm.checkPermission(it, pkg) != PackageManager.PERMISSION_GRANTED }
+        return runtimeMissing || !Settings.canDrawOverlays(context) || !pm.canRequestPackageInstalls()
+    }
+
+    /** Re-applies the grants only when something is missing. Returns null when nothing was needed. Blocking. */
+    fun restoreIfMissing(context: Context): Result? = if (isMissing(context)) grantAll(context) else null
 
     class Step(val labelRes: Int, val ok: Boolean, val detail: String)
 
@@ -48,6 +87,8 @@ object AdbGranter {
                 run(dadb, R.string.grant_step_overlay, "appops set $pkg SYSTEM_ALERT_WINDOW allow"),
                 run(dadb, R.string.grant_step_notifications, "pm grant $pkg android.permission.POST_NOTIFICATIONS"),
                 run(dadb, R.string.grant_step_install, "appops set $pkg REQUEST_INSTALL_PACKAGES allow"),
+                run(dadb, R.string.grant_step_appops, "appops set $pkg USE_FULL_SCREEN_INTENT allow 2>/dev/null; appops set $pkg PROJECT_MEDIA allow 2>/dev/null; echo done"),
+                run(dadb, R.string.grant_step_runtime, RUNTIME_PERMISSIONS.joinToString("; ") { "pm grant $pkg $it 2>/dev/null" } + "; echo done"),
                 enableAccessibility(dadb, pkg),
             )
             return Result(steps, null)
