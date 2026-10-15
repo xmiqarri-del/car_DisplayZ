@@ -100,4 +100,6 @@
     <string name="row_nav_size">حجم الأزرار العلوية: %d</string>
     <string name="row_nav_alpha">شفافية الأزرار العلوية: %d%%</string>
     <string name="clean_no_adb">تعذّر الاتصال بـ ADB. فعّل ADB على المنفذ %d أولاً</string>
+    <string name="uninstall_done">تم حذف %1$s</string>
+    <string name="uninstall_error">تعذّر حذف %1$s: %2$s</string>
 </resources>

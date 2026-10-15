@@ -160,6 +160,29 @@ object AdbGranter {
         }
     }
 
+    /**
+     * Deletes one installed app for the user through ADB ("pm uninstall"), with no system dialog.
+     * Returns null when ADB is not reachable, "Success" when it worked, or Android's error text.
+     * Blocking: run it off the main thread.
+     */
+    fun uninstall(context: Context, packageName: String): String? {
+        if (!PACKAGE_NAME.matches(packageName)) return "Invalid package name"
+        val dadb = try {
+            Dadb.create(HOST, PORT, loadOrCreateKey(context))
+        } catch (e: Exception) {
+            return null
+        }
+        try {
+            val response = dadb.shell("pm uninstall $packageName")
+            val output = response.allOutput.trim()
+            return if (output.contains("Success")) "Success" else output.ifEmpty { "Failure" }
+        } catch (e: Exception) {
+            return null
+        } finally {
+            runCatching { dadb.close() }
+        }
+    }
+
     private fun describe(e: Exception): String = e.message ?: e.javaClass.simpleName
 
     private fun loadOrCreateKey(context: Context): AdbKeyPair {

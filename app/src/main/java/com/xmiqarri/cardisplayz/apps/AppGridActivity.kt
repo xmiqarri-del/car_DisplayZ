@@ -1,11 +1,8 @@
 package com.xmiqarri.cardisplayz.apps
 
 import android.app.AlertDialog
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.GradientDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
@@ -20,6 +17,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xmiqarri.cardisplayz.MATCH
+import com.xmiqarri.cardisplayz.adb.AdbGranter
 import com.xmiqarri.cardisplayz.R
 import com.xmiqarri.cardisplayz.WRAP
 import com.xmiqarri.cardisplayz.dp
@@ -102,16 +100,23 @@ class AppGridActivity : ComponentActivity() {
         }
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.uninstall_title, app.label))
-            .setPositiveButton(R.string.uninstall_confirm) { _, _ ->
-                val intent = Intent(Intent.ACTION_DELETE, Uri.parse("package:${app.packageName}"))
-                try {
-                    startActivity(intent)
-                } catch (e: ActivityNotFoundException) {
-                    Toast.makeText(this, R.string.uninstall_failed, Toast.LENGTH_SHORT).show()
-                }
-            }
+            .setPositiveButton(R.string.uninstall_confirm) { _, _ -> deleteApp(app) }
             .setNegativeButton(R.string.cancel, null)
             .show()
+    }
+
+    /** Deletes the app through ADB, without the system dialog, then refreshes the list. */
+    private fun deleteApp(app: AppItem) {
+        lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) { AdbGranter.uninstall(this@AppGridActivity, app.packageName) }
+            val message = when {
+                result == null -> getString(R.string.clean_no_adb, AdbGranter.PORT)
+                result == "Success" -> getString(R.string.uninstall_done, app.label)
+                else -> getString(R.string.uninstall_error, app.label, result)
+            }
+            Toast.makeText(this@AppGridActivity, message, Toast.LENGTH_LONG).show()
+            if (result == "Success") reload()
+        }
     }
 
     private fun styleChip(chip: TextView, selected: Boolean) {
