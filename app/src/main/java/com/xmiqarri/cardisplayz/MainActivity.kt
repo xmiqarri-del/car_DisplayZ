@@ -15,6 +15,7 @@ import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import android.widget.SeekBar
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
@@ -111,12 +112,39 @@ class MainActivity : ComponentActivity() {
             trailing = toggle(AppSettings.startOnBoot(this)) { on -> AppSettings.setStartOnBoot(this, on) },
             onClick = null,
         )
+        sliderRow(
+            label = { v -> getString(R.string.row_alpha, v) },
+            min = 20,
+            max = 100,
+            value = AppSettings.floatingAlpha(this),
+        ) { v ->
+            AppSettings.setFloatingAlpha(this, v)
+            OverlayService.refresh(this)
+        }
+        sliderRow(
+            label = { v -> getString(R.string.row_size, v) },
+            min = 30,
+            max = 72,
+            value = AppSettings.floatingSizeDp(this),
+        ) { v ->
+            AppSettings.setFloatingSizeDp(this, v)
+            OverlayService.refresh(this)
+        }
 
         section(getString(R.string.section_navigation))
         addRow(
             title = getString(R.string.row_navbar),
             subtitle = getString(R.string.row_navbar_sub),
             trailing = toggle(AppSettings.navBarEnabled(this)) { on -> onNavBarToggled(on) },
+            onClick = null,
+        )
+        addRow(
+            title = getString(R.string.row_nav_autohide),
+            subtitle = getString(R.string.row_nav_autohide_sub),
+            trailing = toggle(AppSettings.navAutoHide(this)) { on ->
+                AppSettings.setNavAutoHide(this, on)
+                NavBarService.instance?.refreshBar()
+            },
             onClick = null,
         )
         addRow(
@@ -270,6 +298,42 @@ class MainActivity : ComponentActivity() {
         row.addView(texts)
         if (trailing != null) row.addView(trailing)
         content.addView(row)
+    }
+
+    /**
+     * A card with a title that shows the current value and a slider under it.
+     * [onCommit] runs once, when the finger lifts, so the floating button is not redrawn on every step.
+     */
+    private fun sliderRow(label: (Int) -> String, min: Int, max: Int, value: Int, onCommit: (Int) -> Unit) {
+        val card = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(20), dp(16), dp(20), dp(12))
+            background = roundedBackground(0xFF121E33.toInt(), dp(16).toFloat())
+            layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) }
+        }
+        val title = TextView(this).apply {
+            text = label(value)
+            textSize = 17f
+            setTextColor(WHITE)
+        }
+        val slider = SeekBar(this).apply {
+            this.max = max - min
+            progress = value - min
+            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(bar: SeekBar, progress: Int, fromUser: Boolean) {
+                    title.text = label(progress + min)
+                }
+
+                override fun onStartTrackingTouch(bar: SeekBar) {}
+
+                override fun onStopTrackingTouch(bar: SeekBar) {
+                    onCommit(bar.progress + min)
+                }
+            })
+        }
+        card.addView(title)
+        card.addView(slider)
+        content.addView(card)
     }
 
     private fun floatingStatusText(canDraw: Boolean): String = getString(

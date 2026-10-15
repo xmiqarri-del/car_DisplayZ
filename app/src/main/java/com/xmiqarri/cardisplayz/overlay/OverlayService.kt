@@ -10,7 +10,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.IBinder
 import android.provider.Settings
 import android.view.Gravity
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.WindowManager
@@ -18,11 +17,11 @@ import android.widget.ImageView
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.xmiqarri.cardisplayz.AppSettings
+import com.xmiqarri.cardisplayz.DragTapListener
 import com.xmiqarri.cardisplayz.R
 import com.xmiqarri.cardisplayz.apps.AppGridActivity
 import com.xmiqarri.cardisplayz.dp
 import com.xmiqarri.cardisplayz.update.UpdateWorker
-import kotlin.math.abs
 
 /**
  * Keeps a small draggable button on top of every other app. Tapping it opens the app grid.
@@ -61,7 +60,7 @@ class OverlayService : Service() {
             stopSelf()
             return START_NOT_STICKY
         }
-        addBubble()
+        if (intent?.action == ACTION_REFRESH) rebuildBubble() else addBubble()
         // Background update checks run from here too, so they start after the car boots.
         UpdateWorker.schedule(this)
         return START_STICKY
@@ -73,17 +72,29 @@ class OverlayService : Service() {
         super.onDestroy()
     }
 
+    /** Removes the current button and draws it again with the latest size and opacity. */
+    private fun rebuildBubble() {
+        bubble?.let { view -> runCatching { windowManager?.removeView(view) } }
+        bubble = null
+        addBubble()
+    }
+
     private fun addBubble() {
         if (bubble != null) return
         val wm = getSystemService(WINDOW_SERVICE) as WindowManager
-        val size = dp(40)
+        val sizeDp = AppSettings.floatingSizeDp(this)
+        val size = dp(sizeDp)
+        // The icon keeps the same proportion inside the circle at every size (9 of 40 dp at the default).
+        val paddingPx = dp(sizeDp * 9 / 40)
+        val alpha = AppSettings.floatingAlpha(this) * 255 / 100
+        val color = (alpha shl 24) or 0x002BB3C0
 
         val view = ImageView(this).apply {
             setImageResource(R.drawable.ic_grid)
-            setPadding(dp(9), dp(9), dp(9), dp(9))
+            setPadding(paddingPx, paddingPx, paddingPx, paddingPx)
             background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(0x802BB3C0.toInt())
+                setColor(color)
             }
             contentDescription = getString(R.string.overlay_button_desc)
         }
@@ -101,7 +112,13 @@ class OverlayService : Service() {
         }
 
         view.setOnTouchListener(
-            DragTapListener(wm, params, ViewConfiguration.get(this).scaledTouchSlop) { openApps() }
+            DragTapListener(
+                wm = wm,
+                params = params,
+                slop = ViewConfiguration.get(this).scaledTouchSlop,
+                moveTarget = view,
+                onTap = { openApps() },
+            )
         )
 
         try {
@@ -121,50 +138,23 @@ class OverlayService : Service() {
         )
     }
 
-    /** Moves the bubble when dragged; calls [onTap] only when the finger did not move. */
-    private class DragTapListener(
-        private val wm: WindowManager,
-        private val params: WindowManager.LayoutParams,
-        private val slop: Int,
-        private val onTap: () -> Unit,
-    ) : View.OnTouchListener {
-
-        private var downX = 0f
-        private var downY = 0f
-        private var startX = 0
-        private var startY = 0
-        private var moved = false
-
-        override fun onTouch(v: View, event: MotionEvent): Boolean {
-            when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN -> {
-                    downX = event.rawX
-                    downY = event.rawY
-                    startX = params.x
-                    startY = params.y
-                    moved = false
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    val dx = event.rawX - downX
-                    val dy = event.rawY - downY
-                    if (abs(dx) > slop || abs(dy) > slop) moved = true
-                    if (moved) {
-                        params.x = startX + dx.toInt()
-                        params.y = startY + dy.toInt()
-                        wm.updateViewLayout(v, params)
-                    }
-                }
-                MotionEvent.ACTION_UP -> {
-                    if (!moved) onTap()
-                }
-            }
-            return true
-        }
-    }
-
     companion object {
         private const val CHANNEL_ID = "overlay"
         private const val NOTIFICATION_ID = 1001
+        private const val ACTION_REFRESH = "com.xmiqarri.cardisplayz.overlay.REFRESH"
+
+        /** Redraws the floating button so a new size or opacity shows at once. Does nothing when it is off. */
+        fun refresh(context: Context) {
+            if (!AppSettings.floatingEnabled(context) || !Settings.canDrawOverlays(context)) return
+            try {
+                ContextCompat.startForegroundService(
+                    context,
+                    Intent(context, OverlayService::class.java).setAction(ACTION_REFRESH)
+                )
+            } catch (e: RuntimeException) {
+                // Same as start(): Android may refuse a background start; the next app open fixes it.
+            }
+        }
 
         /** Starts the floating button if the user has turned it on and allowed it. Safe to call repeatedly. */
         fun start(context: Context) {

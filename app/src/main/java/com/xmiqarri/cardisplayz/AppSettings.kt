@@ -27,6 +27,38 @@ object AppSettings {
         prefs(context).edit().putBoolean("navbar_enabled", enabled).apply()
     }
 
+    /** Opacity of the floating button, in percent (20..100). */
+    fun floatingAlpha(context: Context): Int = prefs(context).getInt("floating_alpha", 50)
+
+    fun setFloatingAlpha(context: Context, percent: Int) {
+        prefs(context).edit().putInt("floating_alpha", percent).apply()
+    }
+
+    /** Diameter of the floating button in dp (30..72). */
+    fun floatingSizeDp(context: Context): Int = prefs(context).getInt("floating_size_dp", 40)
+
+    fun setFloatingSizeDp(context: Context, dp: Int) {
+        prefs(context).edit().putInt("floating_size_dp", dp).apply()
+    }
+
+    /** Fade the top buttons after a few idle seconds. */
+    fun navAutoHide(context: Context): Boolean = prefs(context).getBoolean("nav_autohide", false)
+
+    fun setNavAutoHide(context: Context, enabled: Boolean) {
+        prefs(context).edit().putBoolean("nav_autohide", enabled).apply()
+    }
+
+    /** Last position of the top buttons in pixels, or null when the user has not moved them yet. */
+    fun navPosition(context: Context): Pair<Int, Int>? {
+        val p = prefs(context)
+        if (!p.contains("nav_x")) return null
+        return p.getInt("nav_x", 0) to p.getInt("nav_y", 0)
+    }
+
+    fun setNavPosition(context: Context, x: Int, y: Int) {
+        prefs(context).edit().putInt("nav_x", x).putInt("nav_y", y).apply()
+    }
+
     fun autoUpdate(context: Context): Boolean = prefs(context).getBoolean("auto_update", true)
 
     fun setAutoUpdate(context: Context, enabled: Boolean) {

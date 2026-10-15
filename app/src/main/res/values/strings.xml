@@ -93,4 +93,8 @@
     <string name="grant_step_accessibility">Accessibility service (top buttons)</string>
     <string name="grant_step_runtime">Runtime permissions (storage, location, camera, audio, Bluetooth, Wi-Fi)</string>
     <string name="grant_step_appops">Extra app permissions (full-screen intent, project media)</string>
+    <string name="row_alpha">Floating button opacity: %d%%</string>
+    <string name="row_size">Floating button size: %d</string>
+    <string name="row_nav_autohide">Hide top buttons automatically</string>
+    <string name="row_nav_autohide_sub">They fade after a few seconds of no use and reappear when touched. You can drag them anywhere on the screen</string>
 </resources>
