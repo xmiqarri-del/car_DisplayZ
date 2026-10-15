@@ -102,4 +102,10 @@
     <string name="clean_no_adb">Could not reach ADB. Turn on ADB on port %d first</string>
     <string name="uninstall_done">Deleted %1$s</string>
     <string name="uninstall_error">Could not delete %1$s: %2$s</string>
+    <string name="section_appearance">Appearance</string>
+    <string name="row_background">App background</string>
+    <string name="row_background_sub">Choose any picture from your phone as the background</string>
+    <string name="row_background_remove">Remove background</string>
+    <string name="background_saved">Background set</string>
+    <string name="background_failed">Could not open the picture</string>
 </resources>

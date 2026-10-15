@@ -102,4 +102,10 @@
     <string name="clean_no_adb">تعذّر الاتصال بـ ADB. فعّل ADB على المنفذ %d أولاً</string>
     <string name="uninstall_done">تم حذف %1$s</string>
     <string name="uninstall_error">تعذّر حذف %1$s: %2$s</string>
+    <string name="section_appearance">المظهر</string>
+    <string name="row_background">خلفية التطبيق</string>
+    <string name="row_background_sub">اختر أي صورة من هاتفك لتكون الخلفية</string>
+    <string name="row_background_remove">إزالة الخلفية</string>
+    <string name="background_saved">تم تعيين الخلفية</string>
+    <string name="background_failed">تعذّر فتح الصورة</string>
 </resources>

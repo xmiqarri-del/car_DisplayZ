@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -46,6 +47,22 @@ class MainActivity : ComponentActivity() {
     private val notificationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
+    /** Lets the user pick any picture from the phone to use as the app background. */
+    private val pickBackground =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri == null) return@registerForActivityResult
+            lifecycleScope.launch {
+                val saved = withContext(Dispatchers.IO) { AppBackground.save(this@MainActivity, uri) }
+                Toast.makeText(
+                    this@MainActivity,
+                    if (saved) R.string.background_saved else R.string.background_failed,
+                    Toast.LENGTH_SHORT,
+                ).show()
+                applyBackground()
+                render()
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Restore any grant that was lost since the last start, in the background and only when something is missing.
@@ -55,7 +72,6 @@ class MainActivity : ComponentActivity() {
             setPadding(dp(20), dp(16), dp(20), dp(24))
         }
         setContentView(ScrollView(this).apply {
-            setBackgroundColor(Theme.BACKGROUND_SOLID)
             addView(content)
         })
 
@@ -65,7 +81,13 @@ class MainActivity : ComponentActivity() {
             notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
         UpdateWorker.schedule(this)
+        applyBackground()
         handleIntent(intent)
+    }
+
+    /** Uses the chosen picture as the window background, or the plain colour when none is set. */
+    private fun applyBackground() {
+        window.setBackgroundDrawable(AppBackground.drawable(this) ?: ColorDrawable(Theme.BACKGROUND_SOLID))
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -171,6 +193,26 @@ class MainActivity : ComponentActivity() {
             trailing = null,
             onClick = { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) },
         )
+
+        section(getString(R.string.section_appearance))
+        addRow(
+            title = getString(R.string.row_background),
+            subtitle = getString(R.string.row_background_sub),
+            trailing = null,
+            onClick = { pickBackground.launch("image/*") },
+        )
+        if (AppBackground.isSet(this)) {
+            addRow(
+                title = getString(R.string.row_background_remove),
+                subtitle = null,
+                trailing = null,
+                onClick = {
+                    AppBackground.remove(this)
+                    applyBackground()
+                    render()
+                },
+            )
+        }
 
         section(getString(R.string.section_device))
         deviceSettingRows().forEach { (titleRes, action) ->

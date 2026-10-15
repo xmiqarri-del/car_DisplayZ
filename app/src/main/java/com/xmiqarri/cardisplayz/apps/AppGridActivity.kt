@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.xmiqarri.cardisplayz.AppBackground
 import com.xmiqarri.cardisplayz.MATCH
 import com.xmiqarri.cardisplayz.adb.AdbGranter
 import com.xmiqarri.cardisplayz.R
@@ -131,7 +132,7 @@ class AppGridActivity : ComponentActivity() {
     private fun buildUi(): View {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            background = GradientDrawable(
+            background = AppBackground.drawable(this@AppGridActivity) ?: GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
                 intArrayOf(Theme.BACKGROUND_TOP, Theme.BACKGROUND_BOTTOM)
             )
