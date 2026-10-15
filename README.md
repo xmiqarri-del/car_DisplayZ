@@ -33,7 +33,7 @@ A bar above the app list has three buttons:
 4. The service shows a full-screen `Presentation` on the rear display with a `SurfaceView`. The virtual display draws into that surface.
 5. Tap **Mirror** again, or stop the service from the notification, to stop mirroring. The service releases the projection, the virtual display and the presentation.
 
-The mirror is a view only. Touching the mirror on the rear screen does not control the main screen.
+Touch on the rear screen controls the main screen. A tap or swipe on the mirror is sent to display 0 with `input -d 0`, through the app's own ADB connection (localhost:5555, the same one used for permissions). Swipes are approximated from the start and end points and the press duration, so this is good for taps, scrolling and simple gestures, not for games or precise drawing. The mirror uses the main screen's size, so positions map one to one. ADB must be listening, and the first connection needs the "Allow debugging" approval.
 
 ### How opening apps on the rear screen works
 
@@ -45,6 +45,7 @@ The mirror is a view only. Touching the mirror on the rear screen does not contr
 - The consent prompt appears every time mirroring starts.
 - Mirroring stops if the rear display is disconnected, or when the service is stopped by Android.
 - Only one rear display is supported, the one chosen in the Rear screen button.
+- Touch forwarding needs the ADB connection. If it is not running, taps on the mirror do nothing.
 - This feature was written without a local Android SDK. It was checked by reading the code and by the CI build, not on a car yet. Test it on the head unit before relying on it.
 
 ## One-time setup
