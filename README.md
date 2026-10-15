@@ -48,6 +48,29 @@ Touch on the rear screen controls the main screen. A tap or swipe on the mirror 
 - Touch forwarding needs the ADB connection. If it is not running, taps on the mirror do nothing.
 - This feature was written without a local Android SDK. It was checked by reading the code and by the CI build, not on a car yet. Test it on the head unit before relying on it.
 
+## Locks (experimental, untested on the car)
+
+Both features are off by default. Turn them on under **Settings → Locks**.
+
+### Delayed lock
+
+- The **Delayed lock** button appears on the app grid's bar when the setting is on.
+- Pick 15, 30 or 60 seconds. A countdown dialog appears and is spoken aloud (the last three seconds are spoken too).
+- Cancel stops it at any time before the doors lock.
+- At zero the app runs the head unit's own sequence (`CarLock.lockDoors`): the hazards flash for about one second, the central lock is pulsed at 1.1 s, and the mirrors fold at 1.25 s.
+- Not replicated yet: DisplayMirror also turns off the screens after locking. This version does not do that step.
+
+### Lock from key while the car is on
+
+- When the car refuses a lock from the key while it is on, it sounds the horn and flashes the hazards ten times.
+- If the car is on, in Park, stopped, all doors, trunk and hood are closed, and the doors are still unlocked, the app locks the doors (`FobLockAssist`).
+- It checks for a 30-second cooldown after its own lock, and ignores hazards from its own lock.
+- Limitation: DisplayMirror counts flashes of the two turn lamps through a vehicle listener. This version counts the hazard switch state instead, because the lamp signals are not exposed here. It may miscount, so test it on the car before relying on it.
+
+### How it reaches the car
+
+Both features use the head unit's vehicle SDK (package `com.autolink.manager`), through reflection. On a head unit without that SDK, the app shows "not available" and sends nothing. The command names come from DisplayMirror 3.46.0.
+
 ## One-time setup
 
 1. Allow **Display over other apps** for Car_DisplayZ. The settings screen has a row for this.

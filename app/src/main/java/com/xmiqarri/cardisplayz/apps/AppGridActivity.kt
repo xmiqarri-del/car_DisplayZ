@@ -30,6 +30,7 @@ import com.xmiqarri.cardisplayz.R
 import com.xmiqarri.cardisplayz.Theme
 import com.xmiqarri.cardisplayz.WRAP
 import com.xmiqarri.cardisplayz.dp
+import com.xmiqarri.cardisplayz.lock.DelayedLockController
 import com.xmiqarri.cardisplayz.roundedBackground
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,6 +66,11 @@ class AppGridActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(buildUi())
+    }
+
+    override fun onDestroy() {
+        delayedLock.shutdown()
+        super.onDestroy()
     }
 
     override fun onResume() {
@@ -115,12 +121,16 @@ class AppGridActivity : ComponentActivity() {
     private lateinit var launchButton: TextView
     private lateinit var rearButton: TextView
     private lateinit var mirrorButton: TextView
+    private lateinit var delayedLockButton: TextView
+    private val delayedLock by lazy { DelayedLockController(this) }
 
     /** Row of three buttons: where apps open, which screen is the rear one, and showing the main screen there. */
     private fun buildRearBar(): View {
         launchButton = pill()
         rearButton = pill()
         mirrorButton = pill()
+        delayedLockButton = pill()
+        delayedLockButton.setOnClickListener { delayedLock.showDurationPicker() }
         launchButton.setOnClickListener { toggleLaunchTarget() }
         rearButton.setOnClickListener { chooseRearDisplay() }
         mirrorButton.setOnClickListener { toggleMirror() }
@@ -130,6 +140,7 @@ class AppGridActivity : ComponentActivity() {
             addView(launchButton)
             addView(rearButton)
             addView(mirrorButton)
+            addView(delayedLockButton)
         }
     }
 
@@ -144,7 +155,9 @@ class AppGridActivity : ComponentActivity() {
         launchButton.text = getString(if (AppSettings.launchOnRear(this)) R.string.rear_launch_on else R.string.rear_launch_off)
         rearButton.text = if (rear == null) getString(R.string.rear_none) else getString(R.string.rear_label, rear.name)
         mirrorButton.text = getString(if (MirrorService.running) R.string.mirror_stop else R.string.mirror_start)
-        listOf(launchButton, rearButton, mirrorButton).forEach {
+        delayedLockButton.text = getString(R.string.delayed_lock_button)
+        delayedLockButton.visibility = if (DelayedLockController.isEnabled(this)) View.VISIBLE else View.GONE
+        listOf(launchButton, rearButton, mirrorButton, delayedLockButton).forEach {
             it.background = roundedBackground(Theme.INPUT, dp(20).toFloat())
             it.setTextColor(Theme.TEXT_ON_SURFACE_CHIP)
         }

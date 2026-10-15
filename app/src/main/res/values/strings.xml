@@ -161,4 +161,24 @@
     <string name="mirror_stop">Stop showing on rear</string>
     <string name="mirror_channel">Screen mirror</string>
     <string name="mirror_notification">Showing the main screen on the rear screen</string>
+    <string name="section_locks">Locks</string>
+    <string name="row_delayed_lock">Delayed lock button</string>
+    <string name="row_delayed_lock_sub">Adds a Delayed lock button to the app grid. Pick 15, 30 or 60 seconds; the countdown is spoken aloud, then the doors lock.</string>
+    <string name="row_fob_lock">Lock from key while the car is on</string>
+    <string name="row_fob_lock_sub">Experimental. When the car refuses a lock from the key (horn and ten hazard flashes) while it is on, in Park and stopped with every door closed, the doors lock. Test on the car first.</string>
+    <string name="delayed_lock_button">Delayed lock</string>
+    <string name="delayed_lock_duration_title">Lock the doors after</string>
+    <string name="delayed_lock_duration_hint">The doors lock after the time you choose, with a spoken countdown.</string>
+    <string name="delayed_lock_15s">15 seconds</string>
+    <string name="delayed_lock_30s">30 seconds</string>
+    <string name="delayed_lock_60s">60 seconds</string>
+    <string name="delayed_lock_dialog_title">Locking the doors</string>
+    <string name="delayed_lock_dialog_subtitle">Press Cancel to stop.</string>
+    <string name="delayed_lock_done_title">Doors locked</string>
+    <string name="delayed_lock_done_subtitle">The mirrors fold and the screens turn off.</string>
+    <string name="delayed_lock_speak_start">Locking the doors in %d seconds</string>
+    <string name="delayed_lock_speak_done">Doors locked</string>
+    <string name="delayed_lock_speak_cancelled">Locking cancelled</string>
+    <string name="delayed_lock_cancelled_toast">Locking cancelled</string>
+    <string name="vehicle_unavailable_toast">The car\'s controls are not available on this head unit.</string>
 </resources>
