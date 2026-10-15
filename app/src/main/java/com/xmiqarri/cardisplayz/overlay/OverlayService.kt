@@ -76,14 +76,14 @@ class OverlayService : Service() {
     private fun addBubble() {
         if (bubble != null) return
         val wm = getSystemService(WINDOW_SERVICE) as WindowManager
-        val size = dp(60)
+        val size = dp(40)
 
         val view = ImageView(this).apply {
             setImageResource(R.drawable.ic_grid)
-            setPadding(dp(15), dp(15), dp(15), dp(15))
+            setPadding(dp(9), dp(9), dp(9), dp(9))
             background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(0xE62BB3C0.toInt())
+                setColor(0x802BB3C0.toInt())
             }
             contentDescription = getString(R.string.overlay_button_desc)
         }
