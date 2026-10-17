@@ -57,8 +57,8 @@ Both features are off by default. Turn them on under **Settings → Locks**.
 - The **Delayed lock** button appears on the app grid's bar when the setting is on.
 - Pick 15, 30 or 60 seconds. A countdown dialog appears and is spoken aloud (the last three seconds are spoken too).
 - Cancel stops it at any time before the doors lock.
-- At zero the app runs the head unit's own sequence (`CarLock.lockDoors`): the hazards flash for about one second, the central lock is pulsed at 1.1 s, and the mirrors fold at 1.25 s.
-- Not replicated yet: DisplayMirror also turns off the screens after locking. This version does not do that step.
+- At zero the app runs the head unit's own sequence (`CarLock.lockDoors`): the hazards flash for about one second, the central lock is pulsed and the ambient light goes off at 1.1 s, the mirrors fold at 1.25 s, and the screens go off at 1.4 s.
+- Screens: `setDisplayPowerState(id, 0, 1)` for ids 0 to 5 (state 0 is off). DisplayMirror only uses ids 0 and 1, so the other ids are untested; the state of each one is logged under the `CarLock` tag before and after. The same sequence runs after a lock from the key.
 
 ### Lock from key while the car is on
 
