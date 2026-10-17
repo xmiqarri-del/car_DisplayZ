@@ -58,7 +58,8 @@ Both features are off by default. Turn them on under **Settings → Locks**.
 - Pick 15, 30 or 60 seconds. A countdown dialog appears and is spoken aloud (the last three seconds are spoken too).
 - Cancel stops it at any time before the doors lock.
 - At zero the app runs the head unit's own sequence (`CarLock.lockDoors`): the hazards flash for about one second, the central lock is pulsed and the ambient light goes off at 1.1 s, the mirrors fold at 1.25 s, and the screens go off at 1.4 s.
-- Screens: `setDisplayPowerState(id, 0, 1)` for ids 0 to 5 (state 0 is off). DisplayMirror only uses ids 0 and 1, so the other ids are untested; the state of each one is logged under the `CarLock` tag before and after. The same sequence runs after a lock from the key.
+- Screens: `setDisplayPowerState(id, 0, 1)` (state 0 is off, 1 is on) for the SDK's own ids: 0 main, 1 cluster, 2 passenger, 3 climate, 4 roof. The power service connects in the background and ignores commands until then, so the app connects to it ahead of time and repeats the command up to 3 times for any screen still on. The states are logged under the `CarLock` tag. The same sequence runs after a lock from the key.
+- After a screen-off the app logs the state of the exterior lights (`Exterior lights after lock`). It does not switch them off; see the log to match them to a setter.
 
 ### Lock from key while the car is on
 

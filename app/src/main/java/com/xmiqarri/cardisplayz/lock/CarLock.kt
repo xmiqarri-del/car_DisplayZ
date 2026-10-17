@@ -24,8 +24,19 @@ object CarLock {
     private const val AMBIENT_OFF = 2
     private const val POWER_MANAGER = "power"
 
-    /** Screens to turn off after a lock. The head unit's own app uses 0 and 1; the car has 0, 2 to 5. */
-    private val SCREEN_IDS = listOf(0, 1, 2, 3, 4, 5)
+    /** The vehicle SDK's screen ids: 0 main, 1 cluster, 2 passenger, 3 climate, 4 roof. */
+    private val SCREEN_IDS = listOf(0, 1, 2, 3, 4)
+    private const val SCREEN_ATTEMPTS = 3
+
+    private val EXTERIOR_LIGHT_GETTERS = listOf(
+        "getFLZCU_DAYTIMELIGHT",
+        "getFLZCU_LOWBEAMSTS",
+        "getFLZCU_HIGHBEAMSTS",
+        "getFLZCU_FRONTFOGLIGHTSTS",
+        "getFLZCU_REARFOGLIGHTSTS",
+        "getFRZCU_1_PARKLIGHTSTS",
+        "getFLZCU_LIGHTMAINSWITCHSTS",
+    )
 
     /** Hazards that this app turns on count as its own, for the key-lock watch, for this long. */
     private const val OWN_HAZARD_WINDOW_MS = 4000L
@@ -137,14 +148,28 @@ object CarLock {
     }
 
     /**
-     * Turns the screens off the way DisplayMirror does: setDisplayPowerState(id, 0, 1), where state
-     * 0 is off. DisplayMirror only does ids 0 and 1; this tries every id in [SCREEN_IDS]. The state
-     * of each one is logged before and 700 ms after, so a wrong id shows up in the log.
+     * Connects to the vehicle and power services ahead of time. The power service connects in the
+     * background, and its setDisplayPowerState does nothing until that has finished, so a manager
+     * created at the moment of the lock loses the first commands. Call this well before a lock.
      */
-    private fun turnOffScreens(context: Context, handler: Handler) {
+    fun warmUp(context: Context) {
+        car(context)
+        power(context)
+    }
+
+    /**
+     * Turns the screens off the way DisplayMirror does: setDisplayPowerState(id, 0, 1), where state
+     * 0 is off and 1 is on. The ids are the vehicle SDK's own: 0 main, 1 cluster, 2 passenger, 3
+     * climate, 4 roof. Only screens that report on are sent the command. The state is checked again
+     * 800 ms later and the command repeats for any that are still on, up to [SCREEN_ATTEMPTS] times,
+     * because the first attempt can be lost while the power service is still connecting.
+     */
+    private fun turnOffScreens(context: Context, handler: Handler, attempt: Int = 1) {
         val power = power(context) ?: return
-        val before = SCREEN_IDS.associateWith { displayState(power, it) }
-        for (id in SCREEN_IDS) {
+        val states = SCREEN_IDS.associateWith { displayState(power, it) }
+        val on = SCREEN_IDS.filter { states[it] != 0 && states[it] != -1 }
+        Log.i(TAG, "Screens off, attempt $attempt: states $states, sending to $on")
+        for (id in on) {
             try {
                 power.javaClass.getMethod(
                     "setDisplayPowerState",
@@ -158,8 +183,20 @@ object CarLock {
         }
         handler.postDelayed({
             val after = SCREEN_IDS.associateWith { displayState(power, it) }
-            Log.i(TAG, "Screens off: state before $before, after $after")
-        }, 700)
+            val stillOn = SCREEN_IDS.filter { after[it] != 0 && after[it] != -1 }
+            Log.i(TAG, "Screens off, attempt $attempt: states after $after")
+            if (stillOn.isNotEmpty() && attempt < SCREEN_ATTEMPTS) {
+                turnOffScreens(context, handler, attempt + 1)
+            } else {
+                logExteriorLights(context)
+            }
+        }, 800)
+    }
+
+    /** Logs which exterior lights are still on after a lock, so they can be matched to a setter. */
+    private fun logExteriorLights(context: Context) {
+        val states = EXTERIOR_LIGHT_GETTERS.associateWith { readNumber(context, it)?.toInt() }
+        Log.i(TAG, "Exterior lights after lock: $states")
     }
 
     /** Same as the head unit's pulse: send 0 now and the value 100 ms later. */
