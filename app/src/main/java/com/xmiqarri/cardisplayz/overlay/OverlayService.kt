@@ -21,6 +21,7 @@ import com.xmiqarri.cardisplayz.DragTapListener
 import com.xmiqarri.cardisplayz.R
 import com.xmiqarri.cardisplayz.apps.AppGridActivity
 import com.xmiqarri.cardisplayz.dp
+import com.xmiqarri.cardisplayz.lock.CarLock
 import com.xmiqarri.cardisplayz.lock.FobLockAssist
 import com.xmiqarri.cardisplayz.update.UpdateWorker
 
@@ -64,6 +65,7 @@ class OverlayService : Service() {
         if (intent?.action == ACTION_REFRESH) rebuildBubble() else addBubble()
         // Resumes the key-lock watch after a restart; does nothing when the setting is off.
         FobLockAssist.sync(this)
+        CarLock.resumeRestore(this)
         // Background update checks run from here too, so they start after the car boots.
         UpdateWorker.schedule(this)
         return START_STICKY
