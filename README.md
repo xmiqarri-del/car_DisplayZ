@@ -57,9 +57,18 @@ Both features are off by default. Turn them on under **Settings → Locks**.
 - The **Delayed lock** button appears on the app grid's bar when the setting is on.
 - Pick 15, 30 or 60 seconds. A countdown dialog appears and is spoken aloud (the last three seconds are spoken too).
 - Cancel stops it at any time before the doors lock.
-- At zero the app runs the head unit's own sequence (`CarLock.lockDoors`): the hazards flash for about one second, the central lock is pulsed and the ambient light goes off at 1.1 s, the mirrors fold at 1.25 s, and the screens go off at 1.4 s.
-- Screens: `setDisplayPowerState(id, 0, 1)` (state 0 is off, 1 is on) for the SDK's own ids: 0 main, 1 cluster, 2 passenger, 3 climate, 4 roof. The power service connects in the background and ignores commands until then, so the app connects to it ahead of time and repeats the command up to 3 times for any screen still on. The states are logged under the `CarLock` tag. The same sequence runs after a lock from the key.
-- After a screen-off the app logs the state of the exterior lights (`Exterior lights after lock`). It does not switch them off; see the log to match them to a setter.
+- At zero the app runs the head unit's own sequence (`CarLock.lockDoors`): the hazards flash for about one second, the central lock is pulsed and the ambient light goes off at 1.1 s, the mirrors fold at 1.25 s, the screens go off at 1.4 s and the daytime running lights at 1.6 s. The same sequence runs after a lock from the key.
+- Screens: `setDisplayPowerState(id, 0, 1)` (state 0 is off, 1 is on) for the SDK's own ids: 0 main, 1 cluster, 2 passenger, 3 climate, 4 roof. Only screens that are on are switched off. The power service connects in the background and ignores commands until then, so the app connects to it ahead of time, waits for it, and repeats the command up to 3 times for any screen still on.
+- Daytime running lights: `setICC_DRLSW` (1 on, 2 off), only when the car reports them lit. This is a setting of the car, not a momentary state, so it is always restored (see below).
+- Ambient light: `setICC_SET_TDL_SWITCH` (1 on, 2 off, then 0 after 250 ms), only when the car reports it on.
+- After the exterior lights are checked, their states are logged under the `CarLock` tag (`Exterior lights after lock`).
+
+#### Everything comes back when the doors open
+
+- What the lock switched off is saved, so it survives a restart. About 5.5 s after the lock the app checks that the doors report locked. If they do not, it switches everything back on at once.
+- While the doors are locked the app reads the lock state every second. When two reads in a row say unlocked, it switches the saved screens, daytime lights and ambient light back on.
+- After every attempt it asks the car whether each one is back, and sends the commands again until it is, up to 8 attempts 1.5 s apart. The log shows each attempt (`Restore attempt`).
+- If the head unit restarts while the car is locked, the restore resumes when the app starts and runs as soon as the doors report unlocked.
 
 ### Lock from key while the car is on
 
