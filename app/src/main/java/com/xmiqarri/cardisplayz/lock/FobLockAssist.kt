@@ -84,6 +84,7 @@ object FobLockAssist {
         worker = thread
         handler = h
         h.post(poll)
+        appContext?.let { ctx -> h.post { CarLock.warmUp(ctx) } }
         Log.i(TAG, "Watching for a refused key lock")
     }
 

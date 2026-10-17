@@ -68,6 +68,7 @@ class DelayedLockController(private val activity: Activity) {
             Toast.makeText(activity, R.string.vehicle_unavailable_toast, Toast.LENGTH_LONG).show()
             return
         }
+        CarLock.warmUp(activity)
 
         val pad = activity.dp(16)
         val title = TextView(activity).apply {
