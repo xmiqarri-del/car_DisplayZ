@@ -65,7 +65,7 @@ Both features are off by default. Turn them on under **Settings → Locks**.
 - When the car refuses a lock from the key while it is on, it sounds the horn and flashes the hazards ten times.
 - If the car is on, in Park, stopped, all doors, trunk and hood are closed, and the doors are still unlocked, the app locks the doors (`FobLockAssist`).
 - It checks for a 30-second cooldown after its own lock, and ignores hazards from its own lock.
-- Limitation: DisplayMirror counts flashes of the two turn lamps through a vehicle listener. This version counts the hazard switch state instead, because the lamp signals are not exposed here. It may miscount, so test it on the car before relying on it.
+- Flashes are counted from the two turn lamps (`getLHTURNLIGHTSTS`, `getRHTURNLIGHTSTS`), polled every 100 ms. The hazard button state (`getHAZARDLIGHTSW`) does not change when the car flashes after a refused lock, so it is only a fallback. On the car the flashing starts after the second press of the lock button. Every finished run is logged under the `FobLockAssist` tag with the reason it was ignored. Test it on the car before relying on it.
 
 ### How it reaches the car
 

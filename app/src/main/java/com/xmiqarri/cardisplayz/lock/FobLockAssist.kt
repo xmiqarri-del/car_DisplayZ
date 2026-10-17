@@ -15,9 +15,10 @@ import com.xmiqarri.cardisplayz.AppSettings
  * on, in Park, not moving, every door, the trunk and the hood are closed, and the doors are still
  * unlocked, this locks the doors. It is off by default and only runs while the setting is on.
  *
- * Limitation: DisplayMirror counts flashes of the two turn lamps through a vehicle listener. This
- * version counts the hazard switch state (getHAZARDLIGHTSW) instead, because the lamp signals are
- * not exposed here. Test it on the car before relying on it.
+ * Flashes are counted from the two turn lamps (getLHTURNLIGHTSTS / getRHTURNLIGHTSTS), polled
+ * every 100 ms. On the car the flashing starts after the second press of the lock button. Every
+ * finished run is logged under the FobLockAssist tag, with the reason when it is ignored. Test it
+ * on the car before relying on it.
  */
 object FobLockAssist {
     private const val TAG = "FobLockAssist"
@@ -33,6 +34,8 @@ object FobLockAssist {
     private const val GEAR_P = 1.0
     private const val SPEED = "getVEHICLESPEEDVSOSIG"
     private const val HAZARD_SWITCH = "getHAZARDLIGHTSW"
+    private const val LEFT_TURN_LAMP = "getLHTURNLIGHTSTS"
+    private const val RIGHT_TURN_LAMP = "getRHTURNLIGHTSTS"
     private const val LOCK_STATE = "getLHFDOORLOCKSTS"
     private const val LOCK_UNLOCKED = 1.0
     private const val LOCK_LOCKED = 0.0
@@ -96,9 +99,23 @@ object FobLockAssist {
         Log.i(TAG, "Stopped watching")
     }
 
+    /**
+     * Reads whether the lamps are lit. getHAZARDLIGHTSW is the state of the hazard button, which
+     * does not change when the car flashes after a refused key lock, so the two turn lamps are the
+     * primary signal. The switch is only a fallback when neither lamp can be read.
+     */
+    private fun lampsLit(ctx: Context): Boolean? {
+        val left = CarLock.readNumber(ctx, LEFT_TURN_LAMP)
+        val right = CarLock.readNumber(ctx, RIGHT_TURN_LAMP)
+        if (left == null && right == null) {
+            return CarLock.readNumber(ctx, HAZARD_SWITCH)?.let { it != 0.0 }
+        }
+        return (left ?: 0.0) != 0.0 || (right ?: 0.0) != 0.0
+    }
+
     private fun sample() {
         val ctx = appContext ?: return
-        val on = CarLock.readNumber(ctx, HAZARD_SWITCH)?.let { it != 0.0 } ?: return
+        val on = lampsLit(ctx) ?: return
         if (on && !hazardsLit) {
             // A rising edge is one flash. Every flash extends the run; a quiet gap ends it.
             if (!inRun) {
